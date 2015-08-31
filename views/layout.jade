@@ -1,0 +1,34 @@
+doctype html
+html(ng-app='transactions')
+  head
+    title= title
+    link(rel='stylesheet', href='/stylesheets/style.css')
+    link(rel='stylesheet', href='//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.css')
+    link(rel='stylesheet', href='//netdna.bootstrapcdn.com/font-awesome/4.0.0/css/font-awesome.css')
+    link(rel='stylesheet', href='/isteven-angular-multiselect/isteven-multi-select.css')
+    
+    script(src='/angular/angular.js')
+    script(src='/angular-route/angular-route.js')
+    script(src='/angular-bootstrap/ui-bootstrap.js')
+    script(src='/angular-bootstrap/ui-bootstrap-tpls.js')
+    script(src='/isteven-angular-multiselect/isteven-multi-select.js')
+    
+    script(src='/javascripts/app.js')
+  body(ng-controller='homeController')
+    header
+      nav.navbar.navar-default
+      .container
+          .navbar-header
+            a.navbar-brand(href='/') Gestion de compte en colloc'
+          ul.nav.navbar-nav.navbar-right
+            li
+              a(href='#')
+                i.fa.fa-home  Accueil
+            li
+              a(href='#transactions')
+                i.fa.fa-usd  Comptes
+            li
+              a(href='#add')
+                i.fa.fa-plus  Ajout
+    div(ng-view='')
+    block content

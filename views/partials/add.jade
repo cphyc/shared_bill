@@ -1,0 +1,14 @@
+.jumbotron
+  form
+    p.input-group
+      datepicker(ng-model='transaction.date')
+      input.form-control(type='date' ng-model='transaction.date' required)
+      
+    p.input-group
+      input.form-control(type='text' ng-model='transaction.from' placeholder="De" required
+      typeahead="p as p.name for p in people | filter:$viewValue | limitTo:8" typeahead-on-select="model=$item._id")
+      isteven-multi-select(input-model='people' output-model='transaction.to' tick-property='ticked' 
+        button-label='name' item-label='name' output-properties='_id')
+      input.form-control(type='number' step='0.01' ng-model='transaction.amount' placeholder="Montant" required)
+      
+    input.form-control(type='submit', ng-click='submit(transaction)')
