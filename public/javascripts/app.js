@@ -32,16 +32,16 @@ app.controller('transactionsController', function($scope, $http) {
     }
   }
 
-  var transactions = [],
-      simplified = [];
+  $scope.transactions = [];
 
   function updateResults() {
     $http.get('/api/transactions')
     .then(function(response) {
-      Array.prototype.splice.apply(transactions, [0, 0].concat(response.data));
+      $scope.transactions = response.data;
+      $scope.simplified = [];
 
       var results = {};
-      transactions.forEach(function(transaction) {
+      $scope.transactions.forEach(function(transaction) {
         transaction.toAsString = transaction.to
           .map(function(to) { return to.name; })
           .join(', ');
@@ -57,7 +57,7 @@ app.controller('transactionsController', function($scope, $http) {
         });
       });
 
-      $scope.results = results;
+      $scope.results = angular.copy(results);
 
       var max = {
         value: 0
@@ -90,7 +90,7 @@ app.controller('transactionsController', function($scope, $http) {
         if (Math.abs(min.value) < Math.abs(max.value)) {
           results[min.key].amount = 0;
           results[max.key].amount += min.value;
-          simplified.push({
+          $scope.simplified.push({
             to: results[max.key].user.name,
             from: results[min.key].user.name,
             amount: -min.value
@@ -98,7 +98,7 @@ app.controller('transactionsController', function($scope, $http) {
         } else {
           results[max.key].amount = 0;
           results[min.key].amount += max.value;
-          simplified.push({
+          $scope.simplified.push({
             from: results[min.key].user.name,
             to: results[max.key].user.name,
             amount: max.value
@@ -110,8 +110,6 @@ app.controller('transactionsController', function($scope, $http) {
 
   updateResults();
 
-  $scope.short_results = simplified;
-  $scope.transactions = transactions;
   $scope.edit = function(transaction) {
     alert(transaction);
   };
@@ -121,9 +119,9 @@ app.controller('transactionsController', function($scope, $http) {
       data: transaction
     }).then(function() {
       // Remove the transaction from the transaction list
-      var index = transactions.indexOf(transaction);
+      var index = $scope.transactions.indexOf(transaction);
       if (index > -1) {
-        transactions.splice(index, 1);
+        $scope.transactions.splice(index, 1);
         updateResults();
       }
     }, function() {

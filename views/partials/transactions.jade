@@ -1,6 +1,5 @@
 .jumbotron.row
   h2 Qui doit à qui ?
-
   tabset(justified='true')
     tab(heading='Simplifié', active='true')
       table.table-striped.col-xs-12
@@ -8,7 +7,7 @@
           th De
           th À
           th Montant
-        tr(ng-repeat="result in short_results  | orderBy:'-amount'")
+        tr(ng-repeat="result in simplified  | orderBy:'-amount'")
           td {{ result.from }}
           td {{ result.to }}
           td {{ result.amount | currency }}
