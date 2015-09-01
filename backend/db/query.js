@@ -4,9 +4,7 @@ var Q = require('q');
 var _ = require('lodash');
 
 function findById(model, id) {
-  var objId = new objectId(id);
-
-  return model.findOne({_id: objId})
+  return model.findById(id)
   .then(function(result) {
     if (!result) {
       throw new Error('Not found');
@@ -18,12 +16,15 @@ function findById(model, id) {
 
 module.exports = {
   getUsers: function() {
-    return models.User.find({}, 'name');
+    return models.User
+      .find({}, 'name')
+      .sort('name');
   },
   getTransactions: function() {
     return models.Transaction.find({})
     .populate('from', 'name')
-    .populate('to', 'name');
+    .populate('to', 'name')
+    .sort('date');
   },
   saveTransaction: function(transaction) {
     var _from = transaction.from,
@@ -64,5 +65,13 @@ module.exports = {
         defered.reject(errs)
     });
     return defered.promise;
+  },
+  deleteTransaction: function(transaction) {
+    var id = transaction._id;
+    var one = models.Transaction
+      .findByIdAndRemove(id)
+      .exec();
+
+    return one;
   }
 };

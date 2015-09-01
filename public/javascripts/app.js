@@ -32,85 +32,104 @@ app.controller('transactionsController', function($scope, $http) {
     }
   }
 
-  var transactions = [];
-  $http.get('/api/transactions')
-  .then(function(response) {
-    transactions = response.data;
+  var transactions = [],
+      simplified = [];
 
-    var results = {};
-    transactions.forEach(function(transaction) {
-      transaction.toAsString = transaction.to
-        .map(function(to) { return to.name; })
-        .join(', ');
-      transaction.fromAsString = transaction.from.name;
+  function updateResults() {
+    $http.get('/api/transactions')
+    .then(function(response) {
+      Array.prototype.splice.apply(transactions, [0, 0].concat(response.data));
 
-      var amount = parseInt(transaction.amount);
-      createIfAbsent(results, transaction.from);
+      var results = {};
+      transactions.forEach(function(transaction) {
+        transaction.toAsString = transaction.to
+          .map(function(to) { return to.name; })
+          .join(', ');
+        transaction.fromAsString = transaction.from.name;
 
-      results[transaction.from._id].amount = (results[transaction.from._id].amount) + amount;
-      transaction.to.forEach(function(to) {
-        createIfAbsent(results, to);
-        results[to._id].amount = results[to._id].amount - (amount/transaction.to.length);
+        var amount = parseInt(transaction.amount);
+        createIfAbsent(results, transaction.from);
+
+        results[transaction.from._id].amount = (results[transaction.from._id].amount) + amount;
+        transaction.to.forEach(function(to) {
+          createIfAbsent(results, to);
+          results[to._id].amount = results[to._id].amount - (amount/transaction.to.length);
+        });
       });
-    });
 
-    // Copy the result because results well be modified in place
-    $scope.results = angular.copy(results);
+      $scope.results = results;
 
-    var max = {
-      value: 0
-    }, min = {
-      value : 0
-    }, simplified = [];
-
-    while (true) {
-      max = {
+      var max = {
         value: 0
-      };
-      min = {
+      }, min = {
         value : 0
       };
-      // Find the extremas
-      for (var key in results) {
-        if (results[key].amount - max.value > 1e-14) {
-          max.key = key;
-          max.value = results[key].amount;
-        } else if (results[key].amount - min.value < -1e-14) {
-          min.key = key;
-          min.value = results[key].amount;
+
+      while (true) {
+        max = {
+          value: 0
+        };
+        min = {
+          value : 0
+        };
+        // Find the extremas
+        for (var key in results) {
+          if (results[key].amount - max.value > 1e-14) {
+            max.key = key;
+            max.value = results[key].amount;
+          } else if (results[key].amount - min.value < -1e-14) {
+            min.key = key;
+            min.value = results[key].amount;
+          }
+        }
+
+        if (min.value === 0 && max.value === 0) {
+          break;
+        }
+
+        if (Math.abs(min.value) < Math.abs(max.value)) {
+          results[min.key].amount = 0;
+          results[max.key].amount += min.value;
+          simplified.push({
+            to: results[max.key].user.name,
+            from: results[min.key].user.name,
+            amount: -min.value
+          });
+        } else {
+          results[max.key].amount = 0;
+          results[min.key].amount += max.value;
+          simplified.push({
+            from: results[min.key].user.name,
+            to: results[max.key].user.name,
+            amount: max.value
+          });
         }
       }
+    });
+  }
 
-      if (min.value === 0 && max.value === 0) {
-        break;
+  updateResults();
+
+  $scope.short_results = simplified;
+  $scope.transactions = transactions;
+  $scope.edit = function(transaction) {
+    alert(transaction);
+  };
+
+  $scope.delete = function(transaction) {
+    $http.delete('/api/transactions', {
+      data: transaction
+    }).then(function() {
+      // Remove the transaction from the transaction list
+      var index = transactions.indexOf(transaction);
+      if (index > -1) {
+        transactions.splice(index, 1);
+        updateResults();
       }
-
-      if (Math.abs(min.value) < Math.abs(max.value)) {
-        results[min.key].amount = 0;
-        results[max.key].amount += min.value;
-        simplified.push({
-          to: results[max.key].user.name,
-          from: results[min.key].user.name,
-          amount: -min.value
-        });
-      } else {
-        results[max.key].amount = 0;
-        results[min.key].amount += max.value;
-        simplified.push({
-          to: results[min.key].user.name,
-          from: results[max.key].user.name,
-          amount: max.value
-        });
-      }
-    }
-
-    $scope.short_results = simplified;
-    $scope.transactions = transactions;
-  }, function(error) {
-    console.log('There');
-  });
-
-
+    }, function() {
+      console.log('error while deleting');
+    });
+  }
 });
 
 app.controller('addController', function($scope, $location, $http) {
@@ -136,7 +155,7 @@ app.controller('addController', function($scope, $location, $http) {
       date: $scope.transaction.date
     };
 
-    $http.post('/api/transactions/new', newTransaction,
+    $http.post('/api/transactions', newTransaction,
       {headers: {"Content-Type": 'application/json'}})
     .then(function(response) {
       $location.path('#/transactions');

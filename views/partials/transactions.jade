@@ -8,7 +8,7 @@
           th De
           th À
           th Montant
-        tr(ng-repeat='result in short_results')
+        tr(ng-repeat="result in short_results  | orderBy:'-amount'")
           td {{ result.from }}
           td {{ result.to }}
           td {{ result.amount | currency }}
@@ -17,7 +17,7 @@
         tr
           th Qui  
           th Montant
-        tr(ng-repeat='result in results')
+        tr(ng-repeat="result in results")
           td {{ result.user.name }}
           td {{ result.amount | currency}}  
       
@@ -28,8 +28,15 @@
           th À
           th Montant
           th Date
-        tr(ng-repeat='transaction in transactions')
+          th
+        tr(ng-repeat="transaction in transactions | orderBy:'date'")
           td {{ transaction.fromAsString }} 
           td {{ transaction.toAsString }}
           td {{ transaction.amount | currency }}
           td {{ transaction.date | date:'fullDate' }}
+          td
+            a(href="" ng-click='edit(transaction)')
+              i.fa.fa-pencil
+            |  
+            a(href="" ng-click='delete(transaction)')
+              i.fa.fa-ban
