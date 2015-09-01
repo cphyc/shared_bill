@@ -18,11 +18,25 @@ app.config(function($routeProvider) {
     });
 });
 
-app.controller('homeController', function($scope) {
+app.controller('homeController', function($scope, $rootScope, $modal) {
   $scope.message = 'foo bar';
+  $scope.editTransaction = function(transaction) {
+    var newScope = $rootScope.$new();
+    newScope.transaction = transaction;
+    newScope.edit = transaction ? true: false;
+    newScope.modal = {
+      title: newScope.edit ? 'Edit transaction' : 'New transaction'
+    }
+
+    $modal.open({
+      templateUrl: 'partials/add.html',
+      scope: newScope,
+      controller: 'addController'
+    });
+  }
 });
 
-app.controller('transactionsController', function($scope, $http) {
+app.controller('transactionsController', function($scope, $http, $rootScope) {
   function createIfAbsent(results, user) {
     if (!results[user._id]) {
       results[user._id] = {
@@ -34,7 +48,7 @@ app.controller('transactionsController', function($scope, $http) {
 
   $scope.transactions = [];
 
-  function updateResults() {
+  $scope.updateResults = function() {
     $http.get('/api/transactions')
     .then(function(response) {
       $scope.transactions = response.data;
@@ -108,15 +122,13 @@ app.controller('transactionsController', function($scope, $http) {
     });
   }
 
-  updateResults();
-
-  $scope.edit = function(transaction) {
-    alert(transaction);
-  };
+  $scope.updateResults();
+  $rootScope.$on('updateResults', function() { $scope.updateResults(); });
 
   $scope.delete = function(transaction) {
     $http.delete('/api/transactions', {
-      data: transaction
+      data: transaction,
+      headers: {"Content-Type": 'application/json'}
     }).then(function() {
       // Remove the transaction from the transaction list
       var index = $scope.transactions.indexOf(transaction);
@@ -125,41 +137,56 @@ app.controller('transactionsController', function($scope, $http) {
         updateResults();
       }
     }, function() {
-      console.log('error while deleting');
+      console.log('Error while deleting');
     });
   }
 });
 
-app.controller('addController', function($scope, $location, $http) {
-  // default date = today
-  $scope.transaction = {
-    date: new Date()
-  };
+app.controller('addController', function($scope, $location, $http, $rootScope) {
+  if (!$scope.transaction) {
+    $scope.transaction = {
+      date: new Date()
+    }
+  } else {
+    // reformat string
+    $scope.transaction.date = new Date($scope.transaction.date);
+  }
 
   $http.get('/api/users').then(function(response) {
     var people = response.data;
     // Select all of them by default
+    var toIds = ($scope.transaction.to || []).map(function(to) {
+      return to._id;
+    });
     people.forEach(function(p) {
-      p.ticked = true;
+      if (toIds.length > 0) {
+        p.ticked = toIds.indexOf(p._id) > -1;
+      } else {
+        p.ticked = true;
+      }
     });
     $scope.people = people;
   });
 
-  $scope.submit = function() {
+  $scope.submit = function(transaction, edit, successCallback, errorCallback) {
     var newTransaction = {
-      from: $scope.transaction.from._id,
-      to: $scope.transaction.to.map(function(to) { return to._id; }),
-      amount: $scope.transaction.amount,
-      date: $scope.transaction.date
+      from: transaction.from._id,
+      to: transaction.to.map(function(to) { return to._id; }),
+      amount: transaction.amount,
+      date: transaction.date
     };
 
-    $http.post('/api/transactions', newTransaction,
-      {headers: {"Content-Type": 'application/json'}})
+    $http.post('/api/transactions', {
+        edit: edit,
+        transaction: newTransaction
+      }, { headers: {"Content-Type": 'application/json'} })
     .then(function(response) {
-      $location.path('#/transactions');
+      $rootScope.$broadcast('updateResults');
+      (successCallback || function() {})();
     }, function(response) {
       alert('An error occured', response);
       console.log(response);
+      (errorCallback || function() {})();
     });
   }
 });

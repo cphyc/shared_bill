@@ -18,6 +18,8 @@
   ],
   "dependencies": {
     "angular-bootstrap": "~0.13.3",
-    "angular-route": "~1.4.4"
+    "angular-route": "~1.4.4",
+    "bootstrap": "~3.3.5",
+    "font-awesome": "~4.4.0"
   }
 }

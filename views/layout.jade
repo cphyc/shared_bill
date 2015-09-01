@@ -3,8 +3,8 @@ html(ng-app='transactions')
   head
     title= title
     link(rel='stylesheet', href='/stylesheets/style.css')
-    link(rel='stylesheet', href='//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.css')
-    link(rel='stylesheet', href='//netdna.bootstrapcdn.com/font-awesome/4.0.0/css/font-awesome.css')
+    link(rel='stylesheet', href='/bootstrap/dist/css/bootstrap.min.css')
+    link(rel='stylesheet', href='/font-awesome/css/font-awesome.min.css')
     link(rel='stylesheet', href='/isteven-angular-multiselect/isteven-multi-select.css')
     
     script(src='/angular/angular.js')
@@ -28,7 +28,7 @@ html(ng-app='transactions')
               a(href='#transactions')
                 i.fa.fa-usd  Comptes
             li
-              a(href='#add')
+              a(href='' ng-click='editTransaction()')
                 i.fa.fa-plus  Ajout
     div(ng-view='')
     block content

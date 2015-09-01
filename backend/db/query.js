@@ -26,11 +26,12 @@ module.exports = {
     .populate('to', 'name')
     .sort('date');
   },
-  saveTransaction: function(transaction) {
-    var _from = transaction.from,
-        _to = transaction.to,
+  editTransaction: function(body) {
+    var _from = body.transaction.from,
+        _to = body.transaction.to,
         _amount,
-        _date = transaction.date;
+        _date = body.transaction.date,
+        _id = body.transaction._id;
 
     var defered = Q.defer();
 
@@ -40,10 +41,10 @@ module.exports = {
       // Check that the debtors exist
       return Q.all(_to.map(function(to) {
         return findById(models.User, to);
-      }))
+      }));
     }).then(function() {
       // Convert the amount into an into
-      _amount = parseInt(transaction.amount);
+      _amount = parseInt(body.transaction.amount);
     }).then(function() {
       // to and from exists, now saving
       var tmp = {
@@ -52,14 +53,20 @@ module.exports = {
         amount: _amount,
         date: _date
       };
+      var transaction;
 
-      var transaction = new models.Transaction(tmp);
-      transaction.save(function(err) {
-        if (err) {
-          throw new Error("Error while saving transaction", err);
-        } else {
-          defered.resolve();
-        }
+      if (body.edit) {
+        transaction = models.Transaction
+          .findByIdAndUpdate(_id, tmp);
+      } else {
+        transaction = new models.Transaction(tmp)
+          .save();
+      }
+
+      transaction.then(function() {
+        defered.resolve();
+      }, function(err) {
+        defered.reject(err);
       });
     }).catch(function(errs) {
         defered.reject(errs)
@@ -67,11 +74,8 @@ module.exports = {
     return defered.promise;
   },
   deleteTransaction: function(transaction) {
-    var id = transaction._id;
-    var one = models.Transaction
-      .findByIdAndRemove(id)
+    return models.Transaction
+      .findByIdAndRemove(transaction._id)
       .exec();
-
-    return one;
   }
 };

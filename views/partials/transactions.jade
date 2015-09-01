@@ -34,7 +34,7 @@
           td {{ transaction.amount | currency }}
           td {{ transaction.date | date:'fullDate' }}
           td
-            a(href="" ng-click='edit(transaction)')
+            a(href="" ng-click='editTransaction(transaction)')
               i.fa.fa-pencil
             |  
             a(href="" ng-click='delete(transaction)')
