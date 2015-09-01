@@ -134,11 +134,12 @@ app.controller('transactionsController', function($scope, $http, $rootScope) {
       var index = $scope.transactions.indexOf(transaction);
       if (index > -1) {
         $scope.transactions.splice(index, 1);
-        updateResults();
+        $scope.updateResults();
       }
     }, function() {
       console.log('Error while deleting');
     });
+
   }
 });
 
