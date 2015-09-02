@@ -7,12 +7,39 @@
       datepicker(ng-model='transaction.date')
       input.form-control(type='date' ng-model='transaction.date' required)
       
+    .checkbox
+      label
+        input(type='checkbox' ng-model='isRecurrent')
+        | Recurrent
+    p.input-group(ng-if='isRecurrent')
+      label
+        input(type='radio' ng-model='transaction.frequency' value='daily')
+        | Tous les jours
+      label
+        input(type='radio' ng-model='transaction.frequency' value='weekly')
+        | Toutes les semaines
+      label
+        input(type='radio' ng-model='transaction.frequency' value='monthly')
+        | Tous les mois
+      label
+        input(type='radio' ng-model='transaction.frequency' value='yearly')
+        | Tous les ans
+      datepicker(ng-model='transaction.endDate')
+      input.form-control(type='date' ng-model='transaction.date')
+      
     p.input-group
+      span.input-group-addon De
       input.form-control(type='text' ng-model='transaction.from' placeholder="De" required
       typeahead="p as p.name for p in people | filter:$viewValue | limitTo:8" typeahead-on-select="model=$item._id")
+    p.input-group
+      span.input-group-addon À
       isteven-multi-select(input-model='people' output-model='transaction.to' tick-property='ticked' 
         button-label='name' item-label='name' output-properties='_id')
+    p.input-group
+      span.input-group-addon €
       input.form-control(type='number' step='0.01' ng-model='transaction.amount' placeholder="Montant" required)
+    p.input-group
+      input.form-control(type='text' placeholder='Note' ng-model='transaction.note')
       
     p.input-group
       input.btn.btn-primary(type='submit', ng-click='submit(transaction, edit, $close)' value='Sauvegarder')

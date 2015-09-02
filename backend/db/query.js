@@ -5,11 +5,12 @@ var _ = require('lodash');
 
 function findById(model, id) {
   return model.findById(id)
-  .then(function(result) {
-    if (!result) {
-      throw new Error('Not found');
+  .count()
+  .then(function(e) {
+    if (e === 1) {
+      return true;
     } else {
-      return result[0];
+      throw new Error('Not found');
     }
   });
 }
@@ -31,7 +32,10 @@ module.exports = {
         _to = body.transaction.to,
         _amount,
         _date = body.transaction.date,
-        _id = body.transaction._id;
+        _id = body.transaction._id,
+        _note = body.transaction.note,
+        _frequency = body.transaction.frequency,
+        _endDate = body.transaction.endDate;
 
     var defered = Q.defer();
 
@@ -51,7 +55,10 @@ module.exports = {
         from: _from,
         to: _to,
         amount: _amount,
-        date: _date
+        date: _date,
+        note: _note,
+        frequency: _frequency,
+        endDate: _endDate
       };
       var transaction;
 
@@ -69,7 +76,7 @@ module.exports = {
         defered.reject(err);
       });
     }).catch(function(errs) {
-        defered.reject(errs)
+      defered.reject(errs)
     });
     return defered.promise;
   },

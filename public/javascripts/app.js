@@ -151,6 +151,7 @@ app.controller('addController', function($scope, $location, $http, $rootScope) {
   } else {
     // reformat string
     $scope.transaction.date = new Date($scope.transaction.date);
+    $scope.isRecurrent = $scope.transaction.frequency;
   }
 
   $http.get('/api/users').then(function(response) {
@@ -174,7 +175,11 @@ app.controller('addController', function($scope, $location, $http, $rootScope) {
       from: transaction.from._id,
       to: transaction.to.map(function(to) { return to._id; }),
       amount: transaction.amount,
-      date: transaction.date
+      date: transaction.date,
+      note: transaction.note,
+      endDate: transaction.endDate,
+      frequency: transaction.frequency,
+      _id: transaction._id
     };
 
     $http.post('/api/transactions', {

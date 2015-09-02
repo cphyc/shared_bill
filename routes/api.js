@@ -24,6 +24,7 @@ router.get('/users', function(req, res) {
 });
 
 router.post('/transactions', function(req, res) {
+  console.log(req.body);
   query.editTransaction(req.body).then(function() {
     res.sendStatus(200);
   }, function(err) {

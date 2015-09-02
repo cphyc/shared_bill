@@ -8,7 +8,10 @@ module.exports = {
     from: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
     to: [{type: mongoose.Schema.Types.ObjectId, ref: 'User'}],
     amount: Number,
-    date: Date
+    date: Date,
+    note: String,
+    frequency: {type: String, enum: ['yearly', 'monthly', 'dayly']},
+    endDate: Date
   })),
   User: mongoose.model('User', mongoose.Schema({
     name: String,

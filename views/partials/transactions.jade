@@ -10,7 +10,7 @@
         tr(ng-repeat="result in simplified  | orderBy:'-amount'")
           td {{ result.from }}
           td {{ result.to }}
-          td {{ result.amount | currency }}
+          td {{ result.amount | currency:'€' }}
     tab(heading='Non simplifié')
       table.table-striped.col-xs-12
         tr
@@ -18,7 +18,7 @@
           th Montant
         tr(ng-repeat="result in results")
           td {{ result.user.name }}
-          td {{ result.amount | currency}}  
+          td {{ result.amount | currency:'€'}}  
       
     tab(heading='Toutes les transactions')
       table.table-striped.col-xs-12
@@ -27,12 +27,16 @@
           th À
           th Montant
           th Date
+          th Notes
           th
-        tr(ng-repeat="transaction in transactions | orderBy:'date'")
+        tr(ng-repeat="transaction in transactions | orderBy:'_id'")
           td {{ transaction.fromAsString }} 
           td {{ transaction.toAsString }}
-          td {{ transaction.amount | currency }}
-          td {{ transaction.date | date:'fullDate' }}
+          td {{ transaction.amount | currency:'€' }}
+          td {{ transaction.date | date:'shortDate' }}
+            span(ng-if='transaction.frequency')  
+              | — {{ transaction.endDate | date:'shortDate' }}, {{ transaction.frequency }} 
+          td {{ transaction.note }}
           td
             a(href="" ng-click='editTransaction(transaction)')
               i.fa.fa-pencil
