@@ -5,8 +5,8 @@ var app = angular.module('transactions', ['ngRoute', 'ui.bootstrap', 'isteven-mu
 app.config(function($routeProvider) {
   $routeProvider
     .when('/', {
-      templateUrl: 'partials/home.html',
-      controller: 'homeController'
+      templateUrl: 'partials/transactions.html',
+      controller: 'transactionsController'
     })
     .when('/transactions', {
       templateUrl: 'partials/transactions.html',
