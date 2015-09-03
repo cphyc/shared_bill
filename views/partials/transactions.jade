@@ -29,13 +29,14 @@
           th Date
           th Notes
           th
-        tr(ng-repeat="transaction in transactions | orderBy:'_id'")
+        tr(ng-repeat="transaction in shownTransactions | orderBy:'_id'")
           td {{ transaction.fromAsString }} 
           td {{ transaction.toAsString }}
           td {{ transaction.amount | currency:'€' }}
-          td {{ transaction.date | date:'shortDate' }}
+          td 
+            span(ng-if='!transaction.frequency') {{ transaction.date | amCalendar }}
             span(ng-if='transaction.frequency')  
-              | — {{ transaction.endDate | date:'shortDate' }}, {{ transaction.frequency }} 
+              | {{ transaction.date | amDateFormat:'ll' }} — {{ transaction.endDate | amDateFormat:'ll' }}, {{ transaction.frequency }} 
           td {{ transaction.note }}
           td
             a(href="" ng-click='editTransaction(transaction)')
@@ -43,3 +44,6 @@
             |  
             a(href="" ng-click='delete(transaction)')
               i.fa.fa-ban
+      p
+        a(href='' ng-click='showTransactions("all")' ng-if='!showAllTransactions') Afficher aussi les transactions à venir
+        a(href='' ng-click='showTransactions("past")' ng-if='showAllTransactions') Ne voir que les transactions passées

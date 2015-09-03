@@ -1,6 +1,10 @@
 'use strict';
 
-var app = angular.module('transactions', ['ngRoute', 'ui.bootstrap', 'isteven-multi-select']);
+var app = angular.module('transactions', ['ngRoute', 'ui.bootstrap', 'isteven-multi-select', 'angularMoment']);
+
+app.run(function(amMoment) {
+    amMoment.changeLocale('fr');
+});
 
 app.config(function($routeProvider) {
   $routeProvider
@@ -37,6 +41,24 @@ app.controller('homeController', function($scope, $rootScope, $modal) {
 });
 
 app.controller('transactionsController', function($scope, $http, $rootScope) {
+  $scope.showAllTransactions = false;
+  var transactions = [];
+  var shortTransactionList = [];
+  $scope.shownTransactions = transactions;
+
+  $scope.showTransactions = function(what) {
+    if (what === 'all') {
+      $scope.showAllTransactions = true;
+      $scope.shownTransactions = transactions;
+    } else if (what === 'past'){
+      $scope.showAllTransactions = false;
+      $scope.shownTransactions = shortTransactionList;
+    } else {
+      console.log('error');
+    }
+
+  }
+
   function createIfAbsent(results, user) {
     if (!results[user._id]) {
       results[user._id] = {
@@ -51,18 +73,52 @@ app.controller('transactionsController', function($scope, $http, $rootScope) {
   $scope.updateResults = function() {
     $http.get('/api/transactions')
     .then(function(response) {
-      $scope.transactions = response.data;
+      var now = moment();
+
+      transactions = response.data;
+      shortTransactionList = transactions.filter(function(t) {
+        return now.isAfter(moment(t.date));
+      });
+      $scope.showTransactions('past');
       $scope.simplified = [];
 
       var results = {};
-      $scope.transactions.forEach(function(transaction) {
+      transactions.forEach(function(transaction) {
         transaction.toAsString = transaction.to
           .map(function(to) { return to.name; })
           .join(', ');
         transaction.fromAsString = transaction.from.name;
 
-        var amount = parseInt(transaction.amount);
+        var rawAmount = parseInt(transaction.amount);
         createIfAbsent(results, transaction.from);
+
+        // Count the number of occurences
+        var count;
+        var start = moment(transaction.date), end = moment(transaction.endDate);
+
+        if (end.isAfter(now)) {
+          end = now;
+        }
+        var duration = moment.duration(end - start);
+
+        switch (transaction.frequency) {
+          case 'yearly':
+            count = Math.round(duration.asYears() + 1);
+            break;
+          case 'monthly':
+            count = Math.round(duration.asMonths() + 1);
+            break;
+          case 'weekly':
+            count = Math.round(duration.asWeeks() + 1);
+            break;
+          case 'daily':
+            count = Math.round(duration.asDays() + 1);
+            break
+          default:
+            count = 1;
+        }
+
+        var amount = rawAmount * count;
 
         results[transaction.from._id].amount = (results[transaction.from._id].amount) + amount;
         transaction.to.forEach(function(to) {
@@ -131,9 +187,9 @@ app.controller('transactionsController', function($scope, $http, $rootScope) {
       headers: {"Content-Type": 'application/json'}
     }).then(function() {
       // Remove the transaction from the transaction list
-      var index = $scope.transactions.indexOf(transaction);
+      var index = transactions.indexOf(transaction);
       if (index > -1) {
-        $scope.transactions.splice(index, 1);
+        transactions.splice(index, 1);
         $scope.updateResults();
       }
     }, function() {

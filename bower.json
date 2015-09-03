@@ -18,8 +18,10 @@
   ],
   "dependencies": {
     "angular-bootstrap": "~0.13.3",
+    "angular-moment": "~0.10.2",
     "angular-route": "~1.4.4",
     "bootstrap": "~3.3.5",
-    "font-awesome": "~4.4.0"
+    "font-awesome": "~4.4.0",
+    "moment": "~2.10.6"
   }
 }

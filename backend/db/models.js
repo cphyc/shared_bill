@@ -10,7 +10,7 @@ module.exports = {
     amount: Number,
     date: Date,
     note: String,
-    frequency: {type: String, enum: ['yearly', 'monthly', 'dayly']},
+    frequency: {type: String, enum: ['yearly', 'monthly', 'weekly', 'dayly']},
     endDate: Date
   })),
   User: mongoose.model('User', mongoose.Schema({
