@@ -48,7 +48,7 @@ module.exports = {
       }));
     }).then(function() {
       // Convert the amount into an into
-      _amount = parseInt(body.transaction.amount);
+      _amount = parseFloat(body.transaction.amount);
     }).then(function() {
       // to and from exists, now saving
       var tmp = {

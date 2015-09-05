@@ -107,7 +107,7 @@ app.controller('transactionsController', function($scope, $http, $rootScope) {
           .join(', ');
         transaction.fromAsString = transaction.from.name;
 
-        var rawAmount = parseInt(transaction.amount);
+        var rawAmount = parseFloat(transaction.amount);
         createIfAbsent(results, transaction.from);
 
         // Count the number of occurences
