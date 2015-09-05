@@ -27,7 +27,10 @@ html(ng-app='transactions')
               a(href='#transactions')
                 i.fa.fa-usd  Comptes
             li
+              a(href='#users')
+                i.fa.fa-plus  Utilisateurs
+            li
               a(href='' ng-click='editTransaction()')
-                i.fa.fa-plus  Ajout
+                i.fa.fa-plus  Nouvelle transaction
     div(ng-view='')
     block content

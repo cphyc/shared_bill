@@ -19,11 +19,14 @@ app.config(function($routeProvider) {
     .when('/add', {
       templateUrl: 'partials/add.html',
       controller: 'addController'
+    })
+    .when('/users', {
+      templateUrl: 'partials/users.html',
+      controller: 'userController'
     });
 });
 
 app.controller('homeController', function($scope, $rootScope, $modal) {
-  $scope.message = 'foo bar';
   $scope.editTransaction = function(transaction) {
     var newScope = $rootScope.$new();
     newScope.transaction = transaction;
@@ -33,11 +36,26 @@ app.controller('homeController', function($scope, $rootScope, $modal) {
     }
 
     $modal.open({
-      templateUrl: 'partials/add.html',
+      templateUrl: 'partials/transaction_add.html',
       scope: newScope,
-      controller: 'addController'
+      controller: 'addTransactionController'
     });
-  }
+  };
+
+  $scope.editUser = function(user) {
+    var newScope = $rootScope.$new();
+    newScope.user = user;
+    newScope.edit = user ? true: false;
+    newScope.modal = {
+      title: newScope.edit ? 'Edit user' : 'New user'
+    }
+
+    $modal.open({
+      templateUrl: 'partials/user_add.html',
+      scope: newScope,
+      controller: 'addUserController'
+    });
+  };
 });
 
 app.controller('transactionsController', function($scope, $http, $rootScope) {
@@ -181,7 +199,7 @@ app.controller('transactionsController', function($scope, $http, $rootScope) {
   $scope.updateResults();
   $rootScope.$on('updateResults', function() { $scope.updateResults(); });
 
-  $scope.delete = function(transaction) {
+  $scope.deleteTransaction = function(transaction) {
     $http.delete('/api/transactions', {
       data: transaction,
       headers: {"Content-Type": 'application/json'}
@@ -199,7 +217,7 @@ app.controller('transactionsController', function($scope, $http, $rootScope) {
   }
 });
 
-app.controller('addController', function($scope, $location, $http, $rootScope) {
+app.controller('addTransactionController', function($scope, $http, $rootScope) {
   if (!$scope.transaction) {
     $scope.transaction = {
       date: new Date()
@@ -248,6 +266,52 @@ app.controller('addController', function($scope, $location, $http, $rootScope) {
     }, function(response) {
       alert('An error occured', response);
       console.log(response);
+      (errorCallback || function() {})();
+    });
+  }
+});
+
+app.controller('userController', function($scope, $http, $rootScope) {
+  function updateUsers() {
+    $http.get('/api/users')
+    .then(function(reply) {
+      $scope.users = reply.data;
+    });
+  }
+
+  $scope.deleteUser = function(user) {
+    $http.delete('/api/users', {
+      data: user,
+      headers: {'Content-Type': 'application/json'}
+    }).then(function() {
+      updateUsers();
+    }, function() {
+      console.log('Error while deleting');
+    });
+  }
+
+  updateUsers();
+
+  $rootScope.$on('updateUsers', updateUsers);
+});
+
+app.controller('addUserController', function($scope, $http, $rootScope) {
+  $scope.submit = function(user, edit, successCallback, errorCallback) {
+    var newUser = {
+      name: user.name,
+      pwd: user.password,
+      _id: user._id
+    };
+
+    $http.post('/api/users', {
+      edit: edit,
+      user: newUser
+    }, { headers: {'Content-Type': 'application/json'} })
+    .then(function(response) {
+      $rootScope.$broadcast('updateUsers');
+      (successCallback || function() {})();
+    }, function(error) {
+      console.log(error);
       (errorCallback || function() {})();
     });
   }

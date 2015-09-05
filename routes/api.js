@@ -20,11 +20,28 @@ router.get('/users', function(req, res) {
     console.log(error);
     res.sendStatus(500);
   });
-  // res.send([{name: 'Corentin', id:'abc'}, {name: 'Antoine', id:'def'}, {name: 'Emilie', id:'sdqf'}]);
 });
 
+router.post('/users', function(req, res) {
+  query.editUser(req.body).then(function(user) {
+    res.sendStatus(200);
+  }, function(err) {
+    console.log('Error', err);
+    res.sendStatus(500);
+  })
+});
+
+router.delete('/users', function(req, res) {
+  query.deleteUser(req.body).then(function(user) {
+    res.sendStatus(200);
+  }, function(err) {
+    console.log('Error', err);
+    res.sendStatus(500);
+  })
+})
+
+
 router.post('/transactions', function(req, res) {
-  console.log(req.body);
   query.editTransaction(req.body).then(function() {
     res.sendStatus(200);
   }, function(err) {
@@ -40,6 +57,6 @@ router.delete('/transactions', function(req, res) {
     console.log(err);
     res.sendStatus(500);
   })
-})
+});
 
 module.exports = router;

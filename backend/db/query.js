@@ -84,5 +84,24 @@ module.exports = {
     return models.Transaction
       .findByIdAndRemove(transaction._id)
       .exec();
-  }
+  },
+  editUser: function(req) {
+    var user = {
+      name: req.user.name,
+      pwd: req.user.pwd
+    };
+
+    if (req.edit) {
+      return models.User
+        .findByIdAndUpdate(req.user._id, user);
+    } else {
+      return new models.User(user)
+        .save();
+    }
+  },
+  deleteUser: function(user) {
+    return models.User
+      .findByIdAndRemove(user._id)
+      .exec();
+  },
 };

@@ -1,0 +1,12 @@
+.modal-header
+  button.close(type='button' ng-click='$close()')
+  h4 {{ modal.title }}
+.modal-body
+  form
+    p.input-group
+      input(type='text' placeholder='username' ng-model='user.name' required)
+      input(type='password' placeholder='password' ng-model='user.password' required)
+    p.input-group
+      button.btn.btn-primary(ng-click='submit(user, edit, $close)') Sauvegarder
+      button.btn.btn-danger(ng-click='$close()') Annuler
+.modal-footer
