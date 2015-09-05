@@ -32,7 +32,11 @@
         tr(ng-repeat="transaction in shownTransactions | orderBy:'_id'")
           td {{ transaction.fromAsString }} 
           td {{ transaction.toAsString }}
-          td {{ transaction.amount | currency:'€' }}
+          td
+            span(ng-if='transaction.count > 1')
+              | {{ transaction.amount * transaction.count | currency:'€'}} ({{ transaction.amount | currency:'€'}} * {{ transaction.count}})
+            span(ng-if='transaction.count == 1')
+              | {{ transaction.amount | currency:'€' }}
           td 
             span(ng-if='!transaction.frequency') {{ transaction.date | amCalendar }}
             span(ng-if='transaction.frequency')  

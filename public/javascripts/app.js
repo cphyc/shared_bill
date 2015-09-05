@@ -137,7 +137,7 @@ app.controller('transactionsController', function($scope, $http, $rootScope) {
         }
 
         var amount = rawAmount * count;
-
+        transaction.count = count;
         results[transaction.from._id].amount = (results[transaction.from._id].amount) + amount;
         transaction.to.forEach(function(to) {
           createIfAbsent(results, to);
