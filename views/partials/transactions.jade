@@ -34,7 +34,7 @@
           td {{ transaction.toAsString }}
           td
             span(ng-if='transaction.count > 1')
-              | {{ transaction.amount * transaction.count | currency:'€'}} ({{ transaction.amount | currency:'€'}} * {{ transaction.count}})
+              | {{ transaction.amount * transaction.count | currency:'€'}} ({{ transaction.amount | currency:'€'}} × {{ transaction.count}})
             span(ng-if='transaction.count == 1')
               | {{ transaction.amount | currency:'€' }}
           td 
