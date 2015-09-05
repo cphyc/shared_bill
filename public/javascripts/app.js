@@ -23,7 +23,11 @@ app.config(function($routeProvider) {
     .when('/users', {
       templateUrl: 'partials/users.html',
       controller: 'userController'
-    });
+    })
+    .when('/cleaningTasks', {
+      templateUrl: 'partials/cleaning_tasks.html',
+      controller: 'cleaningTasksController'
+    })
 });
 
 app.controller('homeController', function($scope, $rootScope, $modal) {
@@ -356,4 +360,10 @@ app.controller('addUserController', function($scope, $http, $rootScope) {
       (errorCallback || function() {})();
     });
   }
+});
+
+app.controller('cleaningTasksController', function($scope, $http, $rootScope) {
+  $http.get('/api/tasks').then(function(reply) {
+    $scope.tasks = reply.data;
+  });
 });

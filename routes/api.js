@@ -37,9 +37,8 @@ router.delete('/users', function(req, res) {
   }, function(err) {
     console.log('Error', err);
     res.sendStatus(500);
-  })
-})
-
+  });
+});
 
 router.post('/transactions', function(req, res) {
   query.editTransaction(req.body).then(function() {
@@ -57,6 +56,33 @@ router.delete('/transactions', function(req, res) {
     console.log(err);
     res.sendStatus(500);
   })
+});
+
+router.get('/tasks', function(req, res) {
+  query.getTasks(req.body).then(function(tasks) {
+    res.send(tasks);
+  }, function(err) {
+    console.log('Error', err);
+    res.sendStatus(500);
+  });
+});
+
+router.post('/tasks', function(req, res) {
+  query.editTask(req.body).then(function(tasks) {
+    res.sendStatus(200);
+  }, function(err) {
+    console.log('Error', err);
+    res.sendStatus(500);
+  });
+});
+
+router.post('/task_done', function(req, res) {
+  query.markTaskAsDone(req.body).then(function(tasks) {
+    res.send(tasks);
+  }, function(err) {
+    console.log('Error', err);
+    res.sendStatus(500);
+  });
 });
 
 module.exports = router;

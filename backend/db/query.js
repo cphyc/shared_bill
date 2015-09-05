@@ -104,4 +104,101 @@ module.exports = {
       .findByIdAndRemove(user._id)
       .exec();
   },
+  getTasks: function(task) {
+    var defered = Q.defer();
+    models.Task
+    .find({})
+    .then(function(tasks) {
+      var ret = {};
+      // For each task, get the last time it was done and return true if the task
+      // need to be redone
+      var promises = tasks.map(function(task) {
+        return models.TaskDone
+        .find({task: task})
+        .sort({date: -1})
+        .limit(1)
+        .then(function(tasksDone) {
+          var taskDone = tasksDone[0];
+          if (!taskDone || new Date() - taskDone.date < task.frequency*1/4 ){
+            return {
+              task: task,
+              doIt: 'soon'
+            };
+          } else if (new Date() - taskDone.date < task.frequency/2) {
+            return {
+              task: task,
+              doIt: 'later'
+            };
+          } else {
+            return {
+              task: task,
+              doIt: 'nope'
+            };
+          }
+        });
+      });
+
+      Q.all(promises).then(function(infos) {
+        var soon = [], later = [];
+
+        infos.forEach(function(info) {
+          if (info.doIt === 'soon') {
+            soon.push(info.task);
+          } else if (info.doIt === 'later') {
+            later.push(info.task);
+          }
+        });
+
+        defered.resolve({
+          soon: soon,
+          later: later
+        });
+      });
+
+    });
+    return defered.promise;
+  },
+  editTask: function(req) {
+    var task = {
+      name: req.task.name,
+      frequency: req.task.frequency
+    };
+
+    if (req.edit) {
+      return models.Task
+        .findByIdAndUpdate(req.task._id, task);
+    } else {
+      return new models.Task(task)
+        .save();
+    }
+  },
+  markTaskAsDone: function(req) {
+    console.log(req);
+    var defered = Q.defer();
+    var taskId = req.task._id;
+    var userId = req.by._id;
+
+    models.Task
+    .findById(taskId)
+    .then(function(task) {
+      if (!task) {
+        return new Error('task not found');
+      } else {
+        models.User
+        .findById(userId)
+        .then(function(user) {
+          if (!user) {
+            return new Error('user not found');
+          } else {
+            var taskDone = new models.TaskDone({
+              by: user,
+              task: task
+            });
+          }
+        });
+      }
+    });
+
+    return defered.promise;
+  }
 };
