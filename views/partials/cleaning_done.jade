@@ -1,0 +1,13 @@
+.modal-header
+  button.close(type='button' ng-click='$close()')
+  h4 {{ modal.title }}
+.modal-body
+  form
+    p Marquer la tâche «&nbsp;{{ task.name }}&nbsp;» comme réalisée
+    p.input-group
+      input.form-control(type='text' ng-model='by' placeholder="Par" required
+      typeahead="p as p.name for p in people | filter:$viewValue | limitTo:8" typeahead-on-select="model=$item._id")
+    p.input-group
+      button.btn.btn-primary(ng-click='submit(task, by, $close)') Sauvegarder
+      button.btn.btn-danger(ng-click='$close()') Annuler
+.modal-footer

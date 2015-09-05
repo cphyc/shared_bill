@@ -1,0 +1,32 @@
+.jumbotron.row
+  h2 Tâches ménagères
+  p(ng-if='tasks.soon.length + tasks.later.length == 0') Aucune tâche à faire
+  div(ng-if='tasks.soon.length > 0')
+    h3 À faire rapidement
+    table.table-striped.col-xs-12
+      tr
+        th Tâche
+        th Description
+        th Deadline
+        th
+      tr(ng-repeat="task in tasks.soon")
+        td {{ task.name }}
+        td {{ task.description }}
+        td {{ task.deadline | amDateFormat:'ll' }}
+        td
+          a(href='' ng-click='markTaskAsDone(task)')
+            i.fa.fa-check
+  div(ng-if='tasks.later.length > 0')        
+    h3 À faire plus tard
+    table.table-striped.col-xs-12
+      tr
+        th Tâche
+        th Description
+        th Deadline
+        th
+      tr(ng-repeat="task in tasks.later")
+        td {{ task.name }}
+        td {{ task.deadline | amDateFormat:'ll' }}
+        td
+          a(href='' ng-click='markTaskAsDone(task)')
+            i.fa.fa-check
