@@ -86,6 +86,21 @@ app.controller('homeController', function($scope, $rootScope, $modal) {
   };
   $scope.createUser = function(user) {
     editUser(user, 'create');
+  };
+
+  $scope.markTaskAsDone = function(task) {
+    var newScope = $rootScope.$new();
+    newScope.task = task;
+
+    newScope.modal = {
+      title: 'Marquer la tâche comme réalisée'
+    };
+
+    $modal.open({
+      templateUrl: 'partials/cleaning_done.html',
+      scope: newScope,
+      controller: 'taskDoneController'
+    });
   }
 });
 
@@ -363,7 +378,35 @@ app.controller('addUserController', function($scope, $http, $rootScope) {
 });
 
 app.controller('cleaningTasksController', function($scope, $http, $rootScope) {
-  $http.get('/api/tasks').then(function(reply) {
-    $scope.tasks = reply.data;
+  function updateTasks() {
+    $http.get('/api/tasks').then(function(reply) {
+      $scope.tasks = reply.data;
+    });
+  }
+
+  updateTasks();
+
+  $rootScope.$on('updateCleaningTasks', function() {
+    updateTasks();
   });
+});
+
+app.controller('taskDoneController', function($scope, $http, $rootScope) {
+  $http.get('/api/users')
+  .then(function(reply) {
+    $scope.people = reply.data;
+  });
+
+  $scope.submit = function(task, by, successCallback, errorCallback) {
+    $http.post('/api/task_done', {
+      task: task,
+      by: by
+    }).then(function(response) {
+      $rootScope.$broadcast('updateCleaningTasks');
+      (successCallback || function() {})();
+    }, function(error) {
+      console.log(error);
+      (errorCallback || function() {})();
+    });
+  }
 });

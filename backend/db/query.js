@@ -193,7 +193,8 @@ module.exports = {
             var taskDone = new models.TaskDone({
               by: user,
               task: task
-            });
+            }).save()
+            .then(defered.resolve, defered.reject);
           }
         });
       }
