@@ -7,10 +7,14 @@
           th De
           th À
           th Montant
+          th Annuler la dête
         tr(ng-repeat="result in simplified  | orderBy:'-amount'")
           td {{ result.from }}
           td {{ result.to }}
           td {{ result.amount | currency:'€' }}
+          td
+            a(href='' ng-click='createTransaction(result.raw)')
+              i.fa.fa-check
     tab(heading='Non simplifié')
       table.table-striped.col-xs-12
         tr
@@ -46,7 +50,7 @@
             a(href="" ng-click='editTransaction(transaction)')
               i.fa.fa-pencil
             |  
-            a(href="" ng-click='delete(transaction)')
+            a(href="" ng-click='deleteTransaction(transaction)')
               i.fa.fa-ban
       p
         a(href='' ng-click='showTransactions("all")' ng-if='!showAllTransactions') Afficher aussi les transactions à venir

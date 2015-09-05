@@ -27,10 +27,16 @@ app.config(function($routeProvider) {
 });
 
 app.controller('homeController', function($scope, $rootScope, $modal) {
-  $scope.editTransaction = function(transaction) {
+   function editTransaction(transaction, action) {
     var newScope = $rootScope.$new();
     newScope.transaction = transaction;
-    newScope.edit = transaction ? true: false;
+    if (action === 'edit') {
+      newScope.edit = true;
+    } else if (action === 'create') {
+      newScope.edit = false;
+    } else {
+      console.log('Unknown action', action);
+    }
     newScope.modal = {
       title: newScope.edit ? 'Edit transaction' : 'New transaction'
     }
@@ -40,12 +46,26 @@ app.controller('homeController', function($scope, $rootScope, $modal) {
       scope: newScope,
       controller: 'addTransactionController'
     });
-  };
+  }
 
-  $scope.editUser = function(user) {
+  $scope.editTransaction = function(transaction) {
+    editTransaction(transaction, 'edit');
+  };
+  $scope.createTransaction = function(transaction) {
+    editTransaction(transaction, 'create');
+  }
+
+  function editUser(user, action) {
     var newScope = $rootScope.$new();
     newScope.user = user;
-    newScope.edit = user ? true: false;
+    if (action === 'edit') {
+      newScope.edit = true;
+    } else if (action === 'create') {
+      newScope.edit = false;
+    } else {
+      console.log('Unknown action', action);
+    }
+
     newScope.modal = {
       title: newScope.edit ? 'Edit user' : 'New user'
     }
@@ -56,6 +76,13 @@ app.controller('homeController', function($scope, $rootScope, $modal) {
       controller: 'addUserController'
     });
   };
+
+  $scope.editUser = function(user) {
+    editUser(user, 'edit');
+  };
+  $scope.createUser = function(user) {
+    editUser(user, 'create');
+  }
 });
 
 app.controller('transactionsController', function($scope, $http, $rootScope) {
@@ -181,6 +208,13 @@ app.controller('transactionsController', function($scope, $http, $rootScope) {
           $scope.simplified.push({
             to: results[max.key].user.name,
             from: results[min.key].user.name,
+            raw: {
+              from: results[min.key].user,
+              to: [results[max.key].user],
+              amount: -min.value,
+              note: 'Remboursement',
+              date: new Date()
+            },
             amount: -min.value
           });
         } else {
@@ -189,6 +223,13 @@ app.controller('transactionsController', function($scope, $http, $rootScope) {
           $scope.simplified.push({
             from: results[min.key].user.name,
             to: results[max.key].user.name,
+            raw: {
+              from: results[min.key].user,
+              to: [results[max.key].user],
+              amount: max.value,
+              note: 'Remboursement',
+              date: new Date()
+            },
             amount: max.value
           });
         }
