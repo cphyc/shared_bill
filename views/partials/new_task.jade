@@ -10,6 +10,8 @@
     p.input-group
       input(type='text' placeholder='frequency (per week, ex. "1/2")' ng-model='task.frequency')
     p.input-group
+      input(type='number' placeholder='points' ng-model='task.points')
+    p.input-group
       button.btn.btn-primary(ng-click='submit(task, edit, $close)') Sauvegarder
       button.btn.btn-danger(ng-click='$close()') Annuler
 .modal-footer

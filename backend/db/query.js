@@ -135,7 +135,8 @@ module.exports = {
             nextTime: (taskDone ? nextTime : now).toDate(),
             description: task.description,
             lastTime: taskDone ? taskDone.date : undefined,
-            _id: task._id
+            _id: task._id,
+            points: task.points
           };
 
           console.log('T', taskAsObject);
@@ -186,7 +187,8 @@ module.exports = {
     var task = {
       name: req.task.name,
       description: req.task.description,
-      frequency: req.task.frequency
+      frequency: req.task.frequency,
+      points: req.task.points
     };
 
     if (req.edit) {

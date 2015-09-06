@@ -437,7 +437,7 @@ var FREQUENCY_REGEXP = /^(\d+)$|^(1\/(\d+))$/; // matchs integers or fractions i
 
 app.controller('newTaskController', function($scope, $http, $rootScope) {
   $scope.submit = function(task, edit, successCallback, errorCallback) {
-    var matches = task.frequency.match(FREQUENCY_REGEXP);
+    var matches = task.frequency.toString().match(FREQUENCY_REGEXP);
     task.frequency = (matches[1] || 1) / (matches[3] || 1);
     var data = {
       task: task,
