@@ -160,19 +160,22 @@ module.exports = {
       });
 
       Q.all(promises).then(function(infos) {
-        var soon = [], later = [];
+        var soon = [], later = [], nope = [];
 
         infos.forEach(function(info) {
           if (info.doIt === 'soon') {
             soon.push(info.task);
           } else if (info.doIt === 'later') {
             later.push(info.task);
+          } else {
+            nope.push(info.task);
           }
         });
 
         defered.resolve({
           soon: soon,
-          later: later
+          later: later,
+          nope: nope
         });
       });
 

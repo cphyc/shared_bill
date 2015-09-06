@@ -398,6 +398,7 @@ app.controller('cleaningTasksController', function($scope, $http, $rootScope, $m
       var tasks = {
         soon: reply.data.soon.map(mapFunction),
         later: reply.data.later.map(mapFunction),
+        nope: reply.data.nope.map(mapFunction)
       };
       $scope.tasks = tasks;
     });
