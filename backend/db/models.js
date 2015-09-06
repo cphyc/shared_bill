@@ -20,6 +20,7 @@ models = {
   Task: mongoose.model('Task', mongoose.Schema({
     name: String,
     frequency: Number,
+    description: String
   })),
   TaskDone: mongoose.model('TaskDone', mongoose.Schema({
     by: {type: mongoose.Schema.Types.ObjectId, ref:'User'},

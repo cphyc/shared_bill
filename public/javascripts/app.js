@@ -377,7 +377,7 @@ app.controller('addUserController', function($scope, $http, $rootScope) {
   }
 });
 
-app.controller('cleaningTasksController', function($scope, $http, $rootScope) {
+app.controller('cleaningTasksController', function($scope, $http, $rootScope, $modal) {
   function updateTasks() {
     $http.get('/api/tasks').then(function(reply) {
       $scope.tasks = reply.data;
@@ -389,6 +389,44 @@ app.controller('cleaningTasksController', function($scope, $http, $rootScope) {
   $rootScope.$on('updateCleaningTasks', function() {
     updateTasks();
   });
+
+  var editTask = function(task, edit) {
+    var newScope = $rootScope.$new();
+    newScope.edit = edit;
+    newScope.task = task;
+    newScope.modal = {
+      title: 'Créer nouvelle tâche'
+    };
+
+    $modal.open({
+      scope: newScope,
+      templateUrl: 'partials/new_task.html',
+      controller: 'newTaskController'
+    });
+  }
+
+  $scope.editTask = function(task) {
+    editTask(task, true);
+  };
+  $scope.newTask = function() {
+    editTask(null, false);
+  }
+});
+
+app.controller('newTaskController', function($scope, $http, $rootScope) {
+  $scope.submit = function(task, edit, successCallback, errorCallback) {
+    var data = {
+      task: task,
+      edit: edit
+    }
+    $http.post('/api/tasks', data).then(function(reply) {
+      $rootScope.$broadcast('updateCleaningTasks');
+      (successCallback || function() {})();
+    }, function(err) {
+      console.log(err);
+      (errorCallback || function() {})();
+    });
+  };
 });
 
 app.controller('taskDoneController', function($scope, $http, $rootScope) {

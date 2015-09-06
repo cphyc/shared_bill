@@ -161,6 +161,7 @@ module.exports = {
   editTask: function(req) {
     var task = {
       name: req.task.name,
+      description: req.task.description,
       frequency: req.task.frequency
     };
 

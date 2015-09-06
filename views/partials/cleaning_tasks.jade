@@ -1,5 +1,9 @@
 .jumbotron.row
   h2 Tâches ménagères
+  p 
+    a(href='' ng-click='newTask()') 
+      i.fa.fa-plus
+      | Nouvelle tâche
   p(ng-if='tasks.soon.length + tasks.later.length == 0') Aucune tâche à faire
   div(ng-if='tasks.soon.length > 0')
     h3 À faire rapidement
@@ -30,3 +34,4 @@
         td
           a(href='' ng-click='markTaskAsDone(task)')
             i.fa.fa-check
+  
