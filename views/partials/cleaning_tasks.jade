@@ -46,23 +46,23 @@
         td
           a(href='' ng-click='editTask(task)')
             i.fa.fa-edit
-    div(ng-if='tasks.nope.length > 0')        
-      h3 Autre
-      table.table-striped.col-xs-12
-        tr
-          th Tâche
-          th Description
-          th À faire avant
-          th Fréquence par semaine
-          th Points
-          th
-        tr(ng-repeat="task in tasks.nope")
-          td {{ task.name }}
-          td {{ task.description }}
-          td {{ task.nextTime | amDateFormat:'ll' }}
-          td {{ task.frequency | fraction }}
-          td {{ task.points }}
-          td
-            a(href='' ng-click='editTask(task)')
-              i.fa.fa-edit
-    
+  div(ng-if='tasks.nope.length > 0')        
+    h3 Autre
+    table.table-striped.col-xs-12
+      tr
+        th Tâche
+        th Description
+        th À faire avant
+        th Fréquence par semaine
+        th Points
+        th
+      tr(ng-repeat="task in tasks.nope")
+        td {{ task.name }}
+        td {{ task.description }}
+        td {{ task.nextTime | amDateFormat:'ll' }}
+        td {{ task.frequency | fraction }}
+        td {{ task.points }}
+        td
+          a(href='' ng-click='editTask(task)')
+            i.fa.fa-edit
+  
