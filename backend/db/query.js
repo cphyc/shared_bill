@@ -2,6 +2,7 @@ var models = require('./models');
 var objectId = require('mongoose').Types.ObjectId;
 var Q = require('q');
 var _ = require('lodash');
+var moment = require('moment');
 
 function findById(model, id) {
   return model.findById(id)
@@ -119,19 +120,39 @@ module.exports = {
         .limit(1)
         .then(function(tasksDone) {
           var taskDone = tasksDone[0];
-          if (!taskDone || new Date() - taskDone.date < task.frequency*1/4 ){
+
+          // decorate the task with the date of the last time it has been done
+          var now = moment();
+          var lastTime = moment(task.lastTime);
+
+          var nextTime = moment(lastTime).add(1/task.frequency, 'week');
+          var doSoon = moment(nextTime).subtract(2, 'days');
+          var doLater = moment(nextTime).subtract(1, 'week');
+
+          taskAsObject = {
+            name: task.name,
+            frequency: task.frequency,
+            nextTime: (taskDone ? nextTime : now).toDate(),
+            description: task.description,
+            lastTime: taskDone ? taskDone.date : undefined,
+            _id: task._id
+          };
+
+          console.log('T', taskAsObject);
+
+          if (!taskDone || doSoon.isBefore(now)){
             return {
-              task: task,
+              task: taskAsObject,
               doIt: 'soon'
             };
-          } else if (new Date() - taskDone.date < task.frequency/2) {
+          } else if (doLater.isBefore(now)) {
             return {
-              task: task,
+              task: taskAsObject,
               doIt: 'later'
             };
           } else {
             return {
-              task: task,
+              task: taskAsObject,
               doIt: 'nope'
             };
           }

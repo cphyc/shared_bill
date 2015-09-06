@@ -14,6 +14,7 @@
     "jade-static": "^1.1.2",
     "less-middleware": "1.0.x",
     "lodash": "^3.10.1",
+    "moment": "^2.10.6",
     "mongoose": "^4.1.3",
     "morgan": "~1.6.1",
     "q": "^1.4.1",

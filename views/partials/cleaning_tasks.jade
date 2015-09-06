@@ -11,27 +11,38 @@
       tr
         th Tâche
         th Description
-        th Deadline
+        th À faire avant
+        th Fréquence par semaine
         th
       tr(ng-repeat="task in tasks.soon")
         td {{ task.name }}
         td {{ task.description }}
-        td {{ task.deadline | amDateFormat:'ll' }}
+        td {{ task.nextTime | amDateFormat:'ll' }}
+        td {{ task.frequency | fraction }}
         td
           a(href='' ng-click='markTaskAsDone(task)')
             i.fa.fa-check
+          |  
+          a(href='' ng-click='editTask(task)')
+            i.fa.fa-edit
   div(ng-if='tasks.later.length > 0')        
     h3 À faire plus tard
     table.table-striped.col-xs-12
       tr
         th Tâche
         th Description
-        th Deadline
+        th À faire avant
+        th Fréquence par semaine
         th
       tr(ng-repeat="task in tasks.later")
         td {{ task.name }}
-        td {{ task.deadline | amDateFormat:'ll' }}
+        td {{ task.description }}
+        td {{ task.nextTime | amDateFormat:'ll' }}
+        td {{ task.frequency | fraction }}
         td
           a(href='' ng-click='markTaskAsDone(task)')
             i.fa.fa-check
+          |  
+          a(href='' ng-click='editTask(task)')
+            i.fa.fa-edit
   

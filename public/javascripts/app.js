@@ -377,10 +377,29 @@ app.controller('addUserController', function($scope, $http, $rootScope) {
   }
 });
 
+app.filter('fraction', function() {
+  return function(input) {
+    input = parseFloat(input);
+    if (input < 1) {
+      return '1/' + Math.round(1/input);
+    } else {
+      return input;
+    }
+  };
+});
+
 app.controller('cleaningTasksController', function($scope, $http, $rootScope, $modal) {
   function updateTasks() {
     $http.get('/api/tasks').then(function(reply) {
-      $scope.tasks = reply.data;
+      function mapFunction(task) {
+
+        return task;
+      }
+      var tasks = {
+        soon: reply.data.soon.map(mapFunction),
+        later: reply.data.later.map(mapFunction),
+      };
+      $scope.tasks = tasks;
     });
   }
 
@@ -413,8 +432,12 @@ app.controller('cleaningTasksController', function($scope, $http, $rootScope, $m
   }
 });
 
+var FREQUENCY_REGEXP = /^(\d+)$|^(1\/(\d+))$/; // matchs integers or fractions in the form 1/x
+
 app.controller('newTaskController', function($scope, $http, $rootScope) {
   $scope.submit = function(task, edit, successCallback, errorCallback) {
+    var matches = task.frequency.match(FREQUENCY_REGEXP);
+    task.frequency = (matches[1] || 1) / (matches[3] || 1);
     var data = {
       task: task,
       edit: edit
@@ -426,6 +449,28 @@ app.controller('newTaskController', function($scope, $http, $rootScope) {
       console.log(err);
       (errorCallback || function() {})();
     });
+  };
+});
+
+app.directive('frequency', function() {
+  return {
+    require: 'ngModel',
+    link: function(scope, elm, attrs, ctrl) {
+      ctrl.$validators.frequency = function(modelValue, viewValue) {
+        if (ctrl.$isEmpty(modelValue)) {
+          // consider empty models to be invalid
+          return false;
+        }
+
+        if (INTEGER_REGEXP.test(viewValue)) {
+          // it is valid
+          return true;
+        }
+
+        // it is invalid
+        return false;
+      };
+    }
   };
 });
 
