@@ -28,6 +28,12 @@ module.exports = {
     .populate('to', 'name')
     .sort('date');
   },
+  getTasksDone: function() {
+    return models.TaskDone.find({})
+    .populate('by', 'name')
+    .populate('task')
+    .sort('date');
+  },
   editTransaction: function(body) {
     var _from = body.transaction.from,
         _to = body.transaction.to,

@@ -1,0 +1,7 @@
+table.table-striped.col-xs-12
+  tr
+    th Qui
+    th Nombre de points
+  tr(ng-repeat="p in people | orderBy:'-points'")
+    td {{ p.name }}
+    td {{ p.points }}

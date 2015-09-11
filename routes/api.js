@@ -76,6 +76,15 @@ router.post('/tasks', function(req, res) {
   });
 });
 
+router.get('/task_done', function(req, res) {
+  query.getTasksDone().then(function(tasks) {
+    res.send(tasks);
+  }, function(err) {
+    console.log('Error', err);
+    res.sendStatus(500);
+  });
+});
+
 router.post('/task_done', function(req, res) {
   query.markTaskAsDone(req.body).then(function(tasks) {
     res.send(tasks);
