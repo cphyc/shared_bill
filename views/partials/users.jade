@@ -1,19 +1,20 @@
-.jumbotron.row
-  h2 Utilisateurs
-  p
-    a(ng-click='createUser' href='')
-      i.fa.fa-plus
-      | Nouvel utilisateur
-  table.table-striped.col-xs-12
-    tr
-      th Nom
-      th
-      th
-    tr(ng-repeat='user in users')
-      td {{ user.name }}
-      td             
-        a(href="" ng-click='editUser(user)')
-          i.fa.fa-pencil
-      td  
-        a(href="" ng-click='deleteUser(user)')
-          i.fa.fa-ban 
+.row
+  .col-xs-12
+    h2 Utilisateurs
+    p
+      a(ng-click='createUser' href='')
+        i.fa.fa-plus
+        | Nouvel utilisateur
+    table.table-striped.col-xs-12
+      tr
+        th Nom
+        th
+        th
+      tr(ng-repeat='user in users')
+        td {{ user.name }}
+        td             
+          a(href="" ng-click='editUser(user)')
+            i.fa.fa-pencil
+        td  
+          a(href="" ng-click='deleteUser(user)')
+            i.fa.fa-ban 

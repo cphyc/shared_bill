@@ -1,11 +1,11 @@
-.jumbotron.row
+div
   h2 Tâches ménagères
   p 
     a(href='' ng-click='newTask()') 
       i.fa.fa-plus
       | Nouvelle tâche
   p(ng-if='tasks.soon.length + tasks.later.length == 0') Aucune tâche à faire
-  div(ng-if='tasks.soon.length > 0')
+  div.col-xs-12(ng-if='tasks.soon.length > 0')
     h3 À faire rapidement
     table.table-striped.col-xs-12
       tr
@@ -27,7 +27,7 @@
           |  
           a(href='' ng-click='editTask(task)')
             i.fa.fa-edit
-  div(ng-if='tasks.later.length > 0')        
+  div.col-xs-12(ng-if='tasks.later.length > 0')        
     h3 À faire plus tard
     table.table-striped.col-xs-12
       tr
@@ -46,7 +46,7 @@
         td
           a(href='' ng-click='editTask(task)')
             i.fa.fa-edit
-  div(ng-if='tasks.nope.length > 0')        
+  div.col-xs-12(ng-if='tasks.nope.length > 0')        
     h3 Autre
     table.table-striped.col-xs-12
       tr
@@ -65,4 +65,7 @@
         td
           a(href='' ng-click='editTask(task)')
             i.fa.fa-edit
+  .col-xs-12
+    h3 Sommaire des points
+    point-summary
   
