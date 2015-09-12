@@ -15,7 +15,7 @@ div
         th Fréquence par semaine
         th Points
         th
-      tr(ng-repeat="task in tasks.soon | orderBy:nextTime")
+      tr(ng-repeat="task in tasks.soon | orderBy:'nextTime'")
         td {{ task.name }}
         td {{ task.description }}
         td {{ task.nextTime | amDateFormat:'ll' }}
@@ -37,7 +37,7 @@ div
         th Fréquence par semaine
         th Points
         th
-      tr(ng-repeat="task in tasks.later | orderBy:nextTime")
+      tr(ng-repeat="task in tasks.later | orderBy:'nextTime'")
         td {{ task.name }}
         td {{ task.description }}
         td {{ task.nextTime | amDateFormat:'ll' }}
@@ -56,7 +56,7 @@ div
         th Fréquence par semaine
         th Points
         th
-      tr(ng-repeat="task in tasks.nope | orderBy:nextTime")
+      tr(ng-repeat="task in tasks.nope | orderBy:'nextTime'")
         td {{ task.name }}
         td {{ task.description }}
         td {{ task.nextTime | amDateFormat:'ll' }}
