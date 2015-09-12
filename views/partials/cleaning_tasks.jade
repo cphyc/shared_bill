@@ -11,11 +11,11 @@ div
       tr
         th Tâche
         th Description
-        th À faire avant
+        th À faire avant le
         th Fréquence par semaine
         th Points
         th
-      tr(ng-repeat="task in tasks.soon")
+      tr(ng-repeat="task in tasks.soon | orderBy:nextTime")
         td {{ task.name }}
         td {{ task.description }}
         td {{ task.nextTime | amDateFormat:'ll' }}
@@ -33,11 +33,11 @@ div
       tr
         th Tâche
         th Description
-        th À faire avant
+        th À faire avant le
         th Fréquence par semaine
         th Points
         th
-      tr(ng-repeat="task in tasks.later")
+      tr(ng-repeat="task in tasks.later | orderBy:nextTime")
         td {{ task.name }}
         td {{ task.description }}
         td {{ task.nextTime | amDateFormat:'ll' }}
@@ -52,11 +52,11 @@ div
       tr
         th Tâche
         th Description
-        th À faire avant
+        th À faire avant le
         th Fréquence par semaine
         th Points
         th
-      tr(ng-repeat="task in tasks.nope")
+      tr(ng-repeat="task in tasks.nope | orderBy:nextTime")
         td {{ task.name }}
         td {{ task.description }}
         td {{ task.nextTime | amDateFormat:'ll' }}
