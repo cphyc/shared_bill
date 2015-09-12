@@ -21,8 +21,10 @@
     "angular-moment": "~0.10.2",
     "angular-route": "~1.4.4",
     "bootstrap": "~3.3.5",
+    "bootstrap-material-design": "~0.3.0",
     "Chart.js": "chartjs#~1.0.2",
     "font-awesome": "~4.4.0",
+    "jquery": "~2.1.4",
     "moment": "~2.10.6"
   }
 }
