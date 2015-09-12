@@ -129,23 +129,30 @@ module.exports = {
 
           // decorate the task with the date of the last time it has been done
           var now = moment();
-          var lastTime = moment(task.lastTime);
+          if (taskDone) {
+            var lastTime = moment(taskDone.date);
 
-          var nextTime = moment(lastTime).add(1/task.frequency, 'week');
-          var doSoon = moment(nextTime).subtract(2, 'days');
-          var doLater = moment(nextTime).subtract(1, 'week');
+            var nextTime = moment(lastTime).add(1/task.frequency, 'week');
+            var doSoon = moment(nextTime).subtract(2, 'days');
+            var doLater = moment(nextTime).subtract(1, 'week');
+
+            var doNextTime = nextTime.toDate();
+          } else {
+            var lastTime = undefined;
+            var doNextTime = moment().toDate();
+          }
+
+          console.log(doNextTime);
 
           taskAsObject = {
             name: task.name,
             frequency: task.frequency,
-            nextTime: (taskDone ? nextTime : now).toDate(),
+            nextTime: doNextTime,
             description: task.description,
-            lastTime: taskDone ? taskDone.date : undefined,
+            lastTime: lastTime,
             _id: task._id,
             points: task.points
           };
-
-          console.log('T', taskAsObject);
 
           if (!taskDone || doSoon.isBefore(now)){
             return {
