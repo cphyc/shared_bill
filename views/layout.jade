@@ -26,22 +26,22 @@ html(ng-app='transactions')
     script(src='/javascripts/app.js')
   body(ng-controller='homeController')
     header
-      nav.navbar.navar-default
-      .container
-          .navbar-header
-            a.navbar-brand(href='/') Gestion de compte en colloc'
-          ul.nav.navbar-nav.navbar-right
-            li
-              a(href='#transactions')
-                i.fa.fa-eur  Comptes
-            li
-              a(href='#users')
-                i.fa.fa-users  Utilisateurs
-            li
-              a(href='' ng-click='createTransaction(null)')
-                i.fa.fa-plus  Nouvelle transaction
-            li
-              a(href='#cleaningTasks')
-                i.fa.fa-heart  Tâches ménagères
+      nav.navbar.navbar-default
+        .container
+            .navbar-header
+              a.navbar-brand(href='/') Gestion de compte en colloc'
+            ul.nav.navbar-nav.navbar-right
+              li
+                a(href='#transactions')
+                  i.fa.fa-eur  Comptes
+              li
+                a(href='#users')
+                  i.fa.fa-users  Utilisateurs
+              li
+                a(href='' ng-click='createTransaction(null)')
+                  i.fa.fa-plus  Nouvelle transaction
+              li
+                a(href='#cleaningTasks')
+                  i.fa.fa-heart  Tâches ménagères
     div.container(ng-view='')
     block content
