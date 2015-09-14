@@ -5,7 +5,7 @@ $(document).ready(function() {
     $.material.init();
 });
 
-var app = angular.module('transactions', ['ngRoute', 'ui.bootstrap', 'isteven-multi-select', 'angularMoment']);
+var app = angular.module('transactions', ['ngRoute', 'ui.bootstrap', 'isteven-multi-select', 'angularMoment', 'tableSort']);
 
 app.run(function(amMoment) {
     amMoment.changeLocale('fr');
@@ -152,7 +152,8 @@ app.controller('transactionsController', function($scope, $http, $rootScope) {
       $scope.simplified = [];
 
       var results = {};
-      transactions.forEach(function(transaction) {
+      transactions.forEach(function(transaction, id) {
+        transaction.index = id;
         transaction.toAsString = transaction.to
           .map(function(to) { return to.name; })
           .join(', ');

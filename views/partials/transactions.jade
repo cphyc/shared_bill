@@ -3,58 +3,66 @@
   tabset(justified='true')
     tab(heading='Simplifié', active='true')
       .col-xs-12
-        table.table-striped.col-xs-12
-          tr
-            th De
-            th À
-            th Montant
-            th Annuler la dette
-          tr(ng-repeat="result in simplified  | orderBy:'-amount'")
-            td {{ result.from }}
-            td {{ result.to }}
-            td {{ result.amount | currency:'€' }}
-            td
-              a(href='' ng-click='createTransaction(result.raw)')
-                i.fa.fa-check
+        table.table-striped.col-xs-12(ts-wrapper)
+          thread
+            tr
+              th(ts-criteria='from | lowercase' ts-default) De
+              th(ts-criteria='to | lowercase') À
+              th(ts-criteria='amount | parseFloat') Montant
+              th Annuler la dette
+          tbody
+            tr(ng-repeat="result in simplified  | orderBy:'-amount'" ts-repeat)
+              td {{ result.from }}
+              td {{ result.to }}
+              td {{ result.amount | currency:'€' }}
+              td
+                a(href='' ng-click='createTransaction(result.raw)')
+                  i.fa.fa-check
     tab(heading='Non simplifié')
       .col-xs-12
-        table.table-striped.col-xs-12
-          tr
-            th Qui  
-            th Montant
-          tr(ng-repeat="result in results")
-            td {{ result.user.name }}
-            td {{ result.amount | currency:'€'}}  
+        table.table-striped.col-xs-12(ts-wrapper)
+          thead
+            tr
+              th Qui  
+              th Montant
+          tbody
+            tr(ng-repeat="result in results")
+              td {{ result.user.name }}
+              td {{ result.amount | currency:'€'}}  
       
     tab(heading='Toutes les transactions')
       .col-xs-12
-        table.table-striped.col-xs-12
-          tr
-            th Payé par
-            th À
-            th Montant
-            th Date
-            th Notes
-            th
-          tr(ng-repeat="transaction in shownTransactions | orderBy:'_id'")
-            td {{ transaction.fromAsString }} 
-            td {{ transaction.toAsString }}
-            td
-              span(ng-if='transaction.count > 1')
-                | {{ transaction.amount * transaction.count | currency:'€'}} ({{ transaction.amount | currency:'€'}} × {{ transaction.count}})
-              span(ng-if='transaction.count == 1')
-                | {{ transaction.amount | currency:'€' }}
-            td 
-              span(ng-if='!transaction.frequency') {{ transaction.date | amCalendar }}
-              span(ng-if='transaction.frequency')  
-                | {{ transaction.date | amDateFormat:'ll' }} — {{ transaction.endDate | amDateFormat:'ll' }}, {{ transaction.frequency }} 
-            td {{ transaction.note }}
-            td
-              a(href="" ng-click='editTransaction(transaction)')
-                i.fa.fa-pencil
-              |  
-              a(href="" ng-click='deleteTransaction(transaction)')
-                i.fa.fa-ban
+        table.table-striped.col-xs-12(ts-wrapper)
+          thead
+            tr
+              th
+              th(ts-criteria='fromAsString | lowercase') Payé par
+              th(ts-criteria='toAsString | lowercase') À
+              th(ts-criteria='amount | parseFloat') Montant
+              th(ts-criteria='date') Date
+              th Notes
+              th
+          tbody
+            tr(ng-repeat="transaction in shownTransactions | orderBy:'_id'" ts-repeat)
+              td {{ transaction.index }}
+              td {{ transaction.fromAsString }} 
+              td {{ transaction.toAsString }}
+              td
+                span(ng-if='transaction.count > 1')
+                  | {{ transaction.amount * transaction.count | currency:'€'}} ({{ transaction.amount | currency:'€'}} × {{ transaction.count}})
+                span(ng-if='transaction.count == 1')
+                  | {{ transaction.amount | currency:'€' }}
+              td 
+                span(ng-if='!transaction.frequency') {{ transaction.date | amCalendar }}
+                span(ng-if='transaction.frequency')  
+                  | {{ transaction.date | amDateFormat:'ll' }} — {{ transaction.endDate | amDateFormat:'ll' }}, {{ transaction.frequency }} 
+              td {{ transaction.note }}
+              td
+                a(href="" ng-click='editTransaction(transaction)')
+                  i.fa.fa-pencil
+                |  
+                a(href="" ng-click='deleteTransaction(transaction)')
+                  i.fa.fa-ban
         p
           a(href='' ng-click='showTransactions("all")' ng-if='!showAllTransactions') Afficher aussi les transactions à venir
           a(href='' ng-click='showTransactions("past")' ng-if='showAllTransactions') Ne voir que les transactions passées

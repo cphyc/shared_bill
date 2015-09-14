@@ -5,16 +5,18 @@
       a(ng-click='createUser' href='')
         i.fa.fa-plus
         | Nouvel utilisateur
-    table.table-striped.col-xs-12
-      tr
-        th Nom
-        th
-        th
-      tr(ng-repeat='user in users')
-        td {{ user.name }}
-        td             
-          a(href="" ng-click='editUser(user)')
-            i.fa.fa-pencil
-        td  
-          a(href="" ng-click='deleteUser(user)')
-            i.fa.fa-ban 
+    table.table-striped.col-xs-12(ts-wrapper)
+      thead
+        tr
+          th(ts-criteria='name | lowercase') Nom
+          th
+          th
+      tbody
+        tr(ng-repeat='user in users' ts-repeat)
+          td {{ user.name }}
+          td             
+            a(href="" ng-click='editUser(user)')
+              i.fa.fa-pencil
+          td  
+            a(href="" ng-click='deleteUser(user)')
+              i.fa.fa-ban 
