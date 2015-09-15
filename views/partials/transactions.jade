@@ -35,7 +35,7 @@
         table.table-striped.col-xs-12(ts-wrapper)
           thead
             tr
-              th
+              th(ts-criteria='index | parseInt')
               th(ts-criteria='fromAsString | lowercase') Payé par
               th(ts-criteria='toAsString | lowercase') À
               th(ts-criteria='amount | parseFloat') Montant
