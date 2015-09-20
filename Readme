@@ -1,0 +1,39 @@
+# Shared bill
+
+Simple and efficient tool for shared house to manage the shared bills as well as cleaning tasks!
+
+## Get it!
+You first need to install node [https://nodejs.org/] and bower [http://bower.io/] and git [https://git-scm.com/].
+After that, get the sources of the tool in your favourite folder (named here `<my_awesome_folder_name>`, but that can be anything):
+
+```
+git clone https://github.com/cphyc/shared_bill.git <my_awesome_folder_name>
+cd <my_awesome_folder_name>
+```
+
+## Install
+To install the tool, run the commands:
+
+```
+# Get the node packages
+npm install
+# Get the bower packages
+bower install
+# Clean before launching
+./node_modules/grunt-cli/bin/grunt
+
+```
+
+… and that's it!
+
+## Run it
+To run it, just do
+
+```
+npm start
+```
+
+Your application should start. You can then find it on [http://localhost:3000]! Enjoy :)
+
+
+
