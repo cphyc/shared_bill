@@ -1,6 +1,6 @@
 app.controller('homeController', function($scope, $rootScope, $modal) {
   $scope.editTransaction = function(transaction) {
-    $rootScope.$broadcast('transactions:edit', transaction, 'edit')
+    $rootScope.$broadcast('transactions:edit', transaction, 'edit');
   };
   $scope.createTransaction = function(transaction) {
     $rootScope.$broadcast('transactions:edit', transaction, 'create');
@@ -51,7 +51,7 @@ app.controller('homeController', function($scope, $rootScope, $modal) {
   }
 });
 
-app.controller('transactionsController', function($scope, $rootScope, transactionsService) {
+app.controller('transactionsController', function($scope, $rootScope, $modal, transactionsService) {
   $scope.showAllTransactions = false;
   var transactions = [];
   var shortTransactionList = [];
@@ -86,7 +86,7 @@ app.controller('transactionsController', function($scope, $rootScope, transactio
 
   $scope.deleteTransaction = transactionsService.delete;
 
-  $rootScope.$on('transactions:edit', function (transaction, action) {
+  $rootScope.$on('transactions:edit', function (event, transaction, action) {
     var newScope = $rootScope.$new();
     newScope.transaction = transaction;
 
@@ -151,7 +151,7 @@ app.controller('userController', function($scope, $rootScope, usersService) {
   usersService.update();
 });
 
-app.controller('addUserController', function(usersService) {
+app.controller('addUserController', function($scope, usersService) {
   $scope.submit = usersService.add;
 });
 
