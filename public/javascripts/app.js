@@ -47,3 +47,28 @@ app.filter('fraction', function() {
     }
   };
 });
+
+// Filter out all event older than the given duration in the given unit
+app.filter('older', function() {
+  return function(inputAsArray, duration, unit) {
+    if (unit === 'ever') {
+      return inputAsArray;
+    } else {
+      var tmp = inputAsArray.filter(function(input) {
+        var len = moment.duration(duration, unit),
+            date = moment(input.date),
+            now = moment();
+
+        if (date.isValid()) {
+          return moment(now)
+            .subtract(len)
+            .isBefore(date);
+        } else {
+          return true;
+        }
+      });
+
+      return tmp;
+    }
+  };
+});

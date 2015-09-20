@@ -73,25 +73,29 @@ app.controller('homeController', function($scope, $rootScope, $modal) {
   }
 });
 
-app.controller('transactionsController', function($scope, $http, $rootScope, transactionsService) {
+app.controller('transactionsController', function($scope, $rootScope, transactionsService) {
   $scope.showAllTransactions = false;
   var transactions = [];
   var shortTransactionList = [];
+  var list = ['week', 'month', 'year'];
+
   $scope.shownTransactions = transactions;
+  $scope.duration = 'week'
+  $scope.durationAsString = moment.duration(1, $scope.duration).humanize();
 
-  $scope.showTransactions = function(what) {
-    if (what === 'all') {
-      $scope.showAllTransactions = true;
-      $scope.shownTransactions = transactions;
-    } else if (what === 'past'){
-      $scope.showAllTransactions = false;
-      $scope.shownTransactions = shortTransactionList;
+  $scope.increaseDuration = function () {
+    var id = list.indexOf($scope.duration);
+
+    $scope.duration = list[id+1];
+    if (id === -1 || id+1 === list.length) {
+      $scope.duration = 'ever';
+      $scope.durationAsString = 'depuis toujours';
     } else {
-      console.log('error');
+      $scope.durationAsString = moment.duration(1, $scope.duration).humanize();
     }
-
-  }
-
+  };
+  $scope.transactions = [];
+  $scope.unsimplified = [];
   $scope.transactions = [];
 
   $rootScope.$on('transactions:updated', function() {

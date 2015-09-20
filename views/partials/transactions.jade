@@ -38,12 +38,12 @@
               th(ts-criteria='index | parseInt')
               th(ts-criteria='fromAsString | lowercase') Payé par
               th(ts-criteria='toAsString | lowercase') À
-              th(ts-criteria='amount | parseFloat') Montant
+              th(ts-criteria='amount | parseFloat') Mon
               th(ts-criteria='date') Date
               th Notes
               th
           tbody
-            tr(ng-repeat="transaction in transactions | orderBy:'_id'" ts-repeat)
+            tr(ng-repeat="transaction in transactions | orderBy:'_id' | older:1:duration" ts-repeat)
               td {{ transaction.index }}
               td {{ transaction.fromAsString }} 
               td {{ transaction.toAsString }}
@@ -64,5 +64,4 @@
                 a(href="" ng-click='deleteTransaction(transaction)')
                   i.fa.fa-ban
         p
-          a(href='' ng-click='showTransactions("all")' ng-if='!showAllTransactions') Afficher aussi les transactions à venir
-          a(href='' ng-click='showTransactions("past")' ng-if='showAllTransactions') Ne voir que les transactions passées
+          a(href='' ng-click='increaseDuration()') Afficher plus de transactions ({{ durationAsString }})
