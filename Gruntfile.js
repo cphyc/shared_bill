@@ -30,7 +30,7 @@ module.exports = function(grunt) {
       project: {
         files: [{
           expand: true,
-          src: ['frontend/**/*.js'],
+          src: ['frontend/**/*.js', '!**/*annotated.js'],
           ext: '.annotated.js',
           extDot: 'last'
         }]
