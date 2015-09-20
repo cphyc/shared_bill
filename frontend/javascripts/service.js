@@ -89,7 +89,7 @@ app.service('taskDoneService', function($rootScope, $http, usersService, $q) {
         });
 
         usersService.update();
-        
+
         deferred.promise.then(function() {
           unregisterNow();
         });
@@ -184,10 +184,10 @@ app.service('transactionsSimplifierService', function() {
         };
         // Find the extremas
         for (var key in unsimplified) {
-          if (unsimplified[key].amount - max.value > 1e-14) {
+          if (unsimplified[key].amount - max.value > 1e-10) {
             max.key = key;
             max.value = unsimplified[key].amount;
-          } else if (unsimplified[key].amount - min.value < -1e-14) {
+          } else if (unsimplified[key].amount - min.value < -1e-10) {
             min.key = key;
             min.value = unsimplified[key].amount;
           }

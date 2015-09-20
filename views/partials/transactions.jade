@@ -39,11 +39,11 @@
               th(ts-criteria='fromAsString | lowercase') Payé par
               th(ts-criteria='toAsString | lowercase') À
               th(ts-criteria='amount | parseFloat') Mon
-              th(ts-criteria='date') Date
+              th(ts-criteria='date' ts-default="descending") Date
               th Notes
               th
           tbody
-            tr(ng-repeat="transaction in transactions | orderBy:'_id' | older:1:duration" ts-repeat)
+            tr(ng-repeat="transaction in transactions | older:1:duration" ts-repeat)
               td {{ transaction.index }}
               td {{ transaction.fromAsString }} 
               td {{ transaction.toAsString }}
