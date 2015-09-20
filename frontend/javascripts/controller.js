@@ -22,7 +22,7 @@ app.controller('homeController', function($scope, $rootScope, $modal) {
     };
 
     $modal.open({
-      templateUrl: 'partials/user_add.html',
+      templateUrl: 'partials/user_add',
       scope: newScope,
       controller: 'addUserController'
     });
@@ -44,7 +44,7 @@ app.controller('homeController', function($scope, $rootScope, $modal) {
     };
 
     $modal.open({
-      templateUrl: 'partials/cleaning_done.html',
+      templateUrl: 'partials/cleaning_done',
       scope: newScope,
       controller: 'taskDoneController'
     });
@@ -102,7 +102,7 @@ app.controller('transactionsController', function($scope, $rootScope, $modal, tr
     };
 
     $modal.open({
-      templateUrl: 'partials/transaction_add.html',
+      templateUrl: 'partials/transaction_add',
       scope: newScope,
       controller: 'addTransactionController'
     });
@@ -172,7 +172,7 @@ app.controller('cleaningTasksController', function($scope, $rootScope, $modal, t
 
     $modal.open({
       scope: newScope,
-      templateUrl: 'partials/new_task.html',
+      templateUrl: 'partials/new_task',
       controller: 'newTaskController'
     });
   };

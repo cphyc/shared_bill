@@ -29,6 +29,6 @@ app.directive('pointSummary', function() {
       });
       taskDoneService.update();
     },
-    templateUrl: 'partials/cleaning_hall_of_fame_table.html'
+    templateUrl: 'partials/cleaning_hall_of_fame_table'
   };
 });

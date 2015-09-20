@@ -18,23 +18,23 @@ var app = angular.module('transactions', ['ngRoute', 'ui.bootstrap', 'isteven-mu
   app.config(function($routeProvider) {
     $routeProvider
       .when('/', {
-        templateUrl: 'partials/transactions.html',
+        templateUrl: 'partials/transactions',
         controller: 'transactionsController'
       })
       .when('/transactions', {
-        templateUrl: 'partials/transactions.html',
+        templateUrl: 'partials/transactions',
         controller: 'transactionsController'
       })
       .when('/add', {
-        templateUrl: 'partials/add.html',
+        templateUrl: 'partials/add',
         controller: 'addController'
       })
       .when('/users', {
-        templateUrl: 'partials/users.html',
+        templateUrl: 'partials/users',
         controller: 'userController'
       })
       .when('/cleaningTasks', {
-        templateUrl: 'partials/cleaning_tasks.html',
+        templateUrl: 'partials/cleaning_tasks',
         controller: 'cleaningTasksController'
       });
   });
