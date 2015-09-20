@@ -1,31 +1,9 @@
 app.controller('homeController', function($scope, $rootScope, $modal) {
-   function editTransaction(transaction, action) {
-    var newScope = $rootScope.$new();
-    newScope.transaction = transaction;
-
-    if (action === 'edit') {
-      newScope.edit = true;
-    } else if (action === 'create') {
-      newScope.edit = false;
-    } else {
-      console.log('Unknown action', action);
-    }
-    newScope.modal = {
-      title: newScope.edit ? 'Edit transaction' : 'New transaction'
-    }
-
-    $modal.open({
-      templateUrl: 'partials/transaction_add.html',
-      scope: newScope,
-      controller: 'addTransactionController'
-    });
-  }
-
   $scope.editTransaction = function(transaction) {
-    editTransaction(transaction, 'edit');
+    $rootScope.$broadcast('transactions:edit', transaction, 'edit')
   };
   $scope.createTransaction = function(transaction) {
-    editTransaction(transaction, 'create');
+    $rootScope.$broadcast('transactions:edit', transaction, 'create');
   }
 
   function editUser(user, action) {
@@ -106,10 +84,32 @@ app.controller('transactionsController', function($scope, $rootScope, transactio
 
   transactionsService.update();
 
-  $scope.deleteTransaction = transactionsService.remove;
+  $scope.deleteTransaction = transactionsService.delete;
+
+  $rootScope.$on('transactions:edit', function (transaction, action) {
+    var newScope = $rootScope.$new();
+    newScope.transaction = transaction;
+
+    if (action === 'edit') {
+      newScope.edit = true;
+    } else if (action === 'create') {
+      newScope.edit = false;
+    } else {
+      console.log('Unknown action', action);
+    }
+    newScope.modal = {
+      title: newScope.edit ? 'Edit transaction' : 'New transaction'
+    }
+
+    $modal.open({
+      templateUrl: 'partials/transaction_add.html',
+      scope: newScope,
+      controller: 'addTransactionController'
+    });
+  });
 });
 
-app.controller('addTransactionController', function($scope, $http, $rootScope) {
+app.controller('addTransactionController', function($scope, transactionsService, usersService, $rootScope) {
   if (!$scope.transaction) {
     $scope.transaction = {
       date: new Date()
@@ -120,8 +120,8 @@ app.controller('addTransactionController', function($scope, $http, $rootScope) {
     $scope.isRecurrent = $scope.transaction.frequency;
   }
 
-  $http.get('/api/users').then(function(response) {
-    var people = response.data;
+  $rootScope.$on('users:updated', function() {
+    var people = usersService.users;
     // Select all of them by default
     var toIds = ($scope.transaction.to || []).map(function(to) {
       return to._id;
@@ -136,31 +136,9 @@ app.controller('addTransactionController', function($scope, $http, $rootScope) {
     $scope.people = people;
   });
 
-  $scope.submit = function(transaction, edit, successCallback, errorCallback) {
-    var newTransaction = {
-      from: transaction.from._id,
-      to: transaction.to.map(function(to) { return to._id; }),
-      amount: transaction.amount,
-      date: transaction.date,
-      note: transaction.note,
-      endDate: transaction.endDate,
-      frequency: transaction.frequency,
-      _id: transaction._id
-    };
+  usersService.update();
 
-    $http.post('/api/transactions', {
-        edit: edit,
-        transaction: newTransaction
-      }, { headers: {"Content-Type": 'application/json'} })
-    .then(function(response) {
-      $rootScope.$broadcast('updateResults');
-      (successCallback || function() {})();
-    }, function(response) {
-      alert('An error occured', response);
-      console.log(response);
-      (errorCallback || function() {})();
-    });
-  }
+  $scope.submit = transactionsService.add;
 });
 
 app.controller('userController', function($scope, $rootScope, usersService) {
@@ -177,7 +155,7 @@ app.controller('addUserController', function(usersService) {
   $scope.submit = usersService.add;
 });
 
-app.controller('cleaningTasksController', function($scope, $http, $rootScope, $modal, tasksService) {
+app.controller('cleaningTasksController', function($scope, $rootScope, $modal, tasksService) {
   $rootScope.$on('tasks:updated', function() {
     $scope.tasks = tasksService.tasks;
   });
@@ -214,22 +192,8 @@ app.controller('newTaskController', function($scope, tasksService) {
 });
 
 
-app.controller('taskDoneController', function($scope, $http, $rootScope) {
-  $http.get('/api/users')
-  .then(function(reply) {
-    $scope.people = reply.data;
-  });
+app.controller('taskDoneController', function($scope, usersService, taskDoneService, $rootScope) {
+  $scope.people = usersService.users;
 
-  $scope.submit = function(task, by, successCallback, errorCallback) {
-    $http.post('/api/task_done', {
-      task: task,
-      by: by
-    }).then(function(response) {
-      $rootScope.$broadcast('updateCleaningTasks');
-      (successCallback || function() {})();
-    }, function(error) {
-      console.log(error);
-      (errorCallback || function() {})();
-    });
-  }
+  $scope.submit = taskDoneService.new;
 });

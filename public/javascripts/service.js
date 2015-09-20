@@ -40,7 +40,18 @@ app.service('tasksService', function($http, $rootScope, FREQUENCY_REGEXP) {
 
 app.service('taskDoneService', function() {
   return {
-    add: function() {},
+    add: function(task, by, successCallback, errorCallback) {
+      $http.post('/api/task_done', {
+        task: task,
+        by: by
+      }).then(function(response) {
+        $rootScope.$broadcast('updateCleaningTasks');
+        (successCallback || function() {})();
+      }, function(error) {
+        console.log(error);
+        (errorCallback || function() {})();
+      });
+    },
     remove: function() {},
     get: function() {}
   };
@@ -178,14 +189,38 @@ app.service('transactionsSimplifierService', function() {
 
 app.service('transactionsService', function($rootScope, $http, transactionsSimplifierService) {
   tmp = {
-    add: function() {},
-    delete: function() {
+    add: function(transaction, edit, successCallback, errorCallback) {
+      var newTransaction = {
+        from: transaction.from._id,
+        to: transaction.to.map(function(to) { return to._id; }),
+        amount: transaction.amount,
+        date: transaction.date,
+        note: transaction.note,
+        endDate: transaction.endDate,
+        frequency: transaction.frequency,
+        _id: transaction._id
+      };
+
+      $http.post('/api/transactions', {
+          edit: edit,
+          transaction: newTransaction
+        }, { headers: {"Content-Type": 'application/json'} })
+      .then(function(response) {
+        $rootScope.$broadcast('transactions:update');
+        (successCallback || function() {})();
+      }, function(response) {
+        alert('An error occured', response);
+        console.log(response);
+        (errorCallback || function() {})();
+      })
+    },
+    delete: function(transaction) {
       $http.delete('/api/transactions', {
         data: transaction,
         headers: {"Content-Type": 'application/json'}
       }).then(function() {
         // Remove the transaction from the transaction list
-        transactionsService.update();
+        $rootScope.$broadcast('transactions:update');
       }, function() {
         console.log('Error while deleting');
       });
@@ -226,7 +261,7 @@ app.service('usersService', function($http, $rootScope) {
       .then(function(reply) {
         tmp.users = reply.data;
 
-        $rootScope.$emit('users:updated');
+        $rootScope.$broadcast('users:updated');
       });
     },
     delete: function(user) {
