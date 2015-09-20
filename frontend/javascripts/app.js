@@ -3,7 +3,7 @@ $(document).ready(function() {
     $.material.init();
 });
 
-var app = angular.module('transactions', ['ngRoute', 'ui.bootstrap', 'isteven-multi-select', 'angularMoment', 'tableSort']);
+var app = angular.module('transactions', ['ngRoute', 'ui.bootstrap', 'isteven-multi-select', 'angularMoment', 'tableSort', 'angular-loading-bar']);
 
 
 (function() {
