@@ -38,8 +38,8 @@ app.service('tasksService', function($http, $rootScope, FREQUENCY_REGEXP) {
   return tmp;
 });
 
-app.service('taskDoneService', function() {
-  return {
+app.service('taskDoneService', function($rootScope, $http, usersService) {
+  var tmp = {
     add: function(task, by, successCallback, errorCallback) {
       $http.post('/api/task_done', {
         task: task,
@@ -53,8 +53,47 @@ app.service('taskDoneService', function() {
       });
     },
     remove: function() {},
-    get: function() {}
+    tasksDone: [],
+    peopleSummary: [],
+    update: function() {
+      var scope = $rootScope.$new();
+
+      $http.get('/api/task_done').then(function(taskAnswer) {
+        scope.$on('users:updated', function() {
+          var users = usersService.users;
+          tmp.tasksDone = taskAnswer.data;
+
+          var people = {};
+          users.forEach(function(user) {
+            people[user._id] = user;
+            people[user._id].points = 0;
+          });
+
+          tmp.tasksDone.forEach(function(taskDone) {
+            if (!people[taskDone.by._id]) {
+              console.log('Tâche effectuée par utilisateur absent.');
+            } else {
+              people[taskDone.by._id].points += taskDone.task.points || 0;
+            }
+          });
+
+          peopleAsArray = [];
+          for (var key in people) {
+            peopleAsArray.push(people[key]);
+          }
+
+          tmp.peopleSummary = peopleAsArray;
+          $rootScope.$broadcast('taskDone:updated');
+        });
+
+        usersService.update();
+      });
+    }
   };
+
+  $rootScope.$on('taskDone:update', tmp.update);
+
+  return tmp;
 });
 
 app.service('transactionsSimplifierService', function() {

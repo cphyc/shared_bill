@@ -12,15 +12,16 @@ module.exports = function(grunt) {
     },
     watch: {
       files: ['<%= jshint.files %>'],
-      tasks: ['jshint']
+      tasks: ['default']
     },
     concat: {
-      options: {
-        separator: ';'
-      },
-      dist: {
-        src: ['frontend/**/*.js'],
+      unannotated: {
+        src: ['frontend/**/*.js', '!frontend/**/*.annotated.js'],
         dest: 'public/javascripts/app.js'
+      },
+      annotated: {
+        src: ['frontend/**/*.annotated.js'],
+        dest: 'public/javascripts/app.annotated.js'
       }
     },
     ngAnnotate: {
@@ -52,6 +53,6 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-uglify');
 
 
-  grunt.registerTask('default', ['jshint', 'concat', 'ngAnnotate', 'uglify']);
+  grunt.registerTask('default', ['jshint', 'concat:unannotated', 'ngAnnotate', 'uglify']);
 
 };

@@ -22,36 +22,12 @@ app.directive('frequency', function() {
 
 app.directive('pointSummary', function() {
   return {
-    scope: {
-      duration: '='
-    },
     restrict: 'E',
-    controller: function($scope, $http) {
-      $http.get('/api/users').then(function(userAnswer) {
-        var users = userAnswer.data;
-        $http.get('/api/task_done').then(function(taskAnswer) {
-          var tasksDone = taskAnswer.data;
-
-          var people = {};
-          users.forEach(function(user) {
-            people[user._id] = user;
-            people[user._id].points = 0;
-          });
-
-          tasksDone.forEach(function(taskDone) {
-            if (!people[taskDone.by._id]) {
-              console.log('Tâche effectuée par utilisateur absent.');
-            } else {
-              people[taskDone.by._id].points += taskDone.task.points || 0;
-            }
-          });
-
-          $scope.people = [];
-          for (var key in people) {
-            $scope.people.push(people[key]);
-          }
-        });
+    controller: function($scope, $rootScope, taskDoneService) {
+      $scope.$on('taskDone:updated', function() {
+        $scope.people = taskDoneService.peopleSummary;
       });
+      taskDoneService.update();
     },
     templateUrl: 'partials/cleaning_hall_of_fame_table.html'
   };
