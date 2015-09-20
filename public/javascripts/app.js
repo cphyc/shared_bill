@@ -11,6 +11,8 @@ app.run(function(amMoment) {
     amMoment.changeLocale('fr');
 });
 
+app.constant('FREQUENCY_REGEXP', /^(\d+)$|^(1\/(\d+))$/); // matchs integers or fractions in the form 1/x')
+
 app.config(function($routeProvider) {
   $routeProvider
     .when('/', {

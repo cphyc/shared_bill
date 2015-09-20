@@ -26,7 +26,7 @@
               th Qui  
               th Montant
           tbody
-            tr(ng-repeat="result in results")
+            tr(ng-repeat="result in unsimplified")
               td {{ result.user.name }}
               td {{ result.amount | currency:'€'}}  
       
@@ -43,7 +43,7 @@
               th Notes
               th
           tbody
-            tr(ng-repeat="transaction in shownTransactions | orderBy:'_id'" ts-repeat)
+            tr(ng-repeat="transaction in transactions | orderBy:'_id'" ts-repeat)
               td {{ transaction.index }}
               td {{ transaction.fromAsString }} 
               td {{ transaction.toAsString }}

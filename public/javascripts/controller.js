@@ -2,6 +2,7 @@ app.controller('homeController', function($scope, $rootScope, $modal) {
    function editTransaction(transaction, action) {
     var newScope = $rootScope.$new();
     newScope.transaction = transaction;
+
     if (action === 'edit') {
       newScope.edit = true;
     } else if (action === 'create') {
@@ -72,7 +73,7 @@ app.controller('homeController', function($scope, $rootScope, $modal) {
   }
 });
 
-app.controller('transactionsController', function($scope, $http, $rootScope) {
+app.controller('transactionsController', function($scope, $http, $rootScope, transactionsService) {
   $scope.showAllTransactions = false;
   var transactions = [];
   var shortTransactionList = [];
@@ -91,159 +92,17 @@ app.controller('transactionsController', function($scope, $http, $rootScope) {
 
   }
 
-  function createIfAbsent(results, user) {
-    if (!results[user._id]) {
-      results[user._id] = {
-        amount: 0,
-        user: user
-      }
-    }
-  }
-
   $scope.transactions = [];
 
-  $scope.updateResults = function() {
-    $http.get('/api/transactions')
-    .then(function(response) {
-      var now = moment();
+  $rootScope.$on('transactions:updated', function() {
+    $scope.unsimplified = transactionsService.unsimplified;
+    $scope.simplified = transactionsService.simplified;
+    $scope.transactions = transactionsService.transactions;
+  });
 
-      transactions = response.data;
-      shortTransactionList = transactions.filter(function(t) {
-        return now.isAfter(moment(t.date));
-      });
-      $scope.showTransactions('past');
-      $scope.simplified = [];
+  transactionsService.update();
 
-      var results = {};
-      transactions.forEach(function(transaction, id) {
-        transaction.index = id;
-        transaction.toAsString = transaction.to
-          .map(function(to) { return to.name; })
-          .join(', ');
-        transaction.fromAsString = transaction.from.name;
-
-        var rawAmount = parseFloat(transaction.amount);
-        createIfAbsent(results, transaction.from);
-
-        // Count the number of occurences
-        var count;
-        var start = moment(transaction.date), end = moment(transaction.endDate);
-
-        if (end.isAfter(now)) {
-          end = now;
-        }
-        var duration = moment.duration(end - start);
-
-        switch (transaction.frequency) {
-          case 'yearly':
-            count = Math.round(duration.asYears() + 1);
-            break;
-          case 'monthly':
-            count = Math.round(duration.asMonths() + 1);
-            break;
-          case 'weekly':
-            count = Math.round(duration.asWeeks() + 1);
-            break;
-          case 'daily':
-            count = Math.round(duration.asDays() + 1);
-            break
-          default:
-            count = 1;
-        }
-
-        var amount = rawAmount * count;
-        transaction.count = count;
-        results[transaction.from._id].amount = (results[transaction.from._id].amount) + amount;
-        transaction.to.forEach(function(to) {
-          createIfAbsent(results, to);
-          results[to._id].amount = results[to._id].amount - (amount/transaction.to.length);
-        });
-      });
-
-      $scope.results = angular.copy(results);
-
-      var max = {
-        value: 0
-      }, min = {
-        value : 0
-      };
-
-      while (true) {
-        max = {
-          value: 0
-        };
-        min = {
-          value : 0
-        };
-        // Find the extremas
-        for (var key in results) {
-          if (results[key].amount - max.value > 1e-14) {
-            max.key = key;
-            max.value = results[key].amount;
-          } else if (results[key].amount - min.value < -1e-14) {
-            min.key = key;
-            min.value = results[key].amount;
-          }
-        }
-
-        if (min.value === 0 && max.value === 0) {
-          break;
-        }
-
-        if (Math.abs(min.value) < Math.abs(max.value)) {
-          results[min.key].amount = 0;
-          results[max.key].amount += min.value;
-          $scope.simplified.push({
-            to: results[max.key].user.name,
-            from: results[min.key].user.name,
-            raw: {
-              from: results[min.key].user,
-              to: [results[max.key].user],
-              amount: -min.value,
-              note: 'Remboursement',
-              date: new Date()
-            },
-            amount: -min.value
-          });
-        } else {
-          results[max.key].amount = 0;
-          results[min.key].amount += max.value;
-          $scope.simplified.push({
-            from: results[min.key].user.name,
-            to: results[max.key].user.name,
-            raw: {
-              from: results[min.key].user,
-              to: [results[max.key].user],
-              amount: max.value,
-              note: 'Remboursement',
-              date: new Date()
-            },
-            amount: max.value
-          });
-        }
-      }
-    });
-  }
-
-  $scope.updateResults();
-  $rootScope.$on('updateResults', function() { $scope.updateResults(); });
-
-  $scope.deleteTransaction = function(transaction) {
-    $http.delete('/api/transactions', {
-      data: transaction,
-      headers: {"Content-Type": 'application/json'}
-    }).then(function() {
-      // Remove the transaction from the transaction list
-      var index = transactions.indexOf(transaction);
-      if (index > -1) {
-        transactions.splice(index, 1);
-        $scope.updateResults();
-      }
-    }, function() {
-      console.log('Error while deleting');
-    });
-
-  }
+  $scope.deleteTransaction = transactionsService.remove;
 });
 
 app.controller('addTransactionController', function($scope, $http, $rootScope) {
@@ -300,73 +159,26 @@ app.controller('addTransactionController', function($scope, $http, $rootScope) {
   }
 });
 
-app.controller('userController', function($scope, $http, $rootScope) {
-  function updateUsers() {
-    $http.get('/api/users')
-    .then(function(reply) {
-      $scope.users = reply.data;
-    });
-  }
+app.controller('userController', function($scope, $rootScope, usersService) {
+  $scope.deleteUser = usersService.delete;
 
-  $scope.deleteUser = function(user) {
-    $http.delete('/api/users', {
-      data: user,
-      headers: {'Content-Type': 'application/json'}
-    }).then(function() {
-      updateUsers();
-    }, function() {
-      console.log('Error while deleting');
-    });
-  }
-
-  updateUsers();
-
-  $rootScope.$on('updateUsers', updateUsers);
-});
-
-app.controller('addUserController', function($scope, $http, $rootScope) {
-  $scope.submit = function(user, edit, successCallback, errorCallback) {
-    var newUser = {
-      name: user.name,
-      pwd: user.password,
-      _id: user._id
-    };
-
-    $http.post('/api/users', {
-      edit: edit,
-      user: newUser
-    }, { headers: {'Content-Type': 'application/json'} })
-    .then(function(response) {
-      $rootScope.$broadcast('updateUsers');
-      (successCallback || function() {})();
-    }, function(error) {
-      console.log(error);
-      (errorCallback || function() {})();
-    });
-  }
-});
-
-app.controller('cleaningTasksController', function($scope, $http, $rootScope, $modal) {
-  function updateTasks() {
-    $http.get('/api/tasks').then(function(reply) {
-      function mapFunction(task) {
-
-        return task;
-      }
-      var tasks = {
-        soon: reply.data.soon.map(mapFunction),
-        later: reply.data.later.map(mapFunction),
-        nope: reply.data.nope.map(mapFunction)
-      };
-      $scope.tasks = tasks;
-    });
-  }
-
-  updateTasks();
-
-  $rootScope.$on('updateCleaningTasks', function() {
-    updateTasks();
+  $rootScope.$on('users:updated', function() {
+    $scope.users = usersService.users;
   });
+
+  usersService.update();
+});
+
+app.controller('addUserController', function(usersService) {
+  $scope.submit = usersService.add;
+});
+
+app.controller('cleaningTasksController', function($scope, $http, $rootScope, $modal, tasksService) {
+  $rootScope.$on('tasks:updated', function() {
+    $scope.tasks = tasksService.tasks;
+  });
+
+  tasksService.update();
 
   var editTask = function(task, edit) {
     var newScope = $rootScope.$new();
@@ -391,24 +203,10 @@ app.controller('cleaningTasksController', function($scope, $http, $rootScope, $m
   }
 });
 
-var FREQUENCY_REGEXP = /^(\d+)$|^(1\/(\d+))$/; // matchs integers or fractions in the form 1/x
 
-app.controller('newTaskController', function($scope, $http, $rootScope) {
-  $scope.submit = function(task, edit, successCallback, errorCallback) {
-    var matches = task.frequency.toString().match(FREQUENCY_REGEXP);
-    task.frequency = (matches[1] || 1) / (matches[3] || 1);
-    var data = {
-      task: task,
-      edit: edit
-    }
-    $http.post('/api/tasks', data).then(function(reply) {
-      $rootScope.$broadcast('updateCleaningTasks');
-      (successCallback || function() {})();
-    }, function(err) {
-      console.log(err);
-      (errorCallback || function() {})();
-    });
-  };
+
+app.controller('newTaskController', function($scope, tasksService) {
+  $scope.submit = tasksService.add;
 });
 
 
