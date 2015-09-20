@@ -4,7 +4,7 @@ app.controller('homeController', function($scope, $rootScope, $modal) {
   };
   $scope.createTransaction = function(transaction) {
     $rootScope.$broadcast('transactions:edit', transaction, 'create');
-  }
+  };
 
   function editUser(user, action) {
     var newScope = $rootScope.$new();
@@ -19,14 +19,14 @@ app.controller('homeController', function($scope, $rootScope, $modal) {
 
     newScope.modal = {
       title: newScope.edit ? 'Edit user' : 'New user'
-    }
+    };
 
     $modal.open({
       templateUrl: 'partials/user_add.html',
       scope: newScope,
       controller: 'addUserController'
     });
-  };
+  }
 
   $scope.editUser = function(user) {
     editUser(user, 'edit');
@@ -48,7 +48,7 @@ app.controller('homeController', function($scope, $rootScope, $modal) {
       scope: newScope,
       controller: 'taskDoneController'
     });
-  }
+  };
 });
 
 app.controller('transactionsController', function($scope, $rootScope, $modal, transactionsService) {
@@ -58,7 +58,7 @@ app.controller('transactionsController', function($scope, $rootScope, $modal, tr
   var list = ['week', 'month', 'year'];
 
   $scope.shownTransactions = transactions;
-  $scope.duration = 'week'
+  $scope.duration = 'week';
   $scope.durationAsString = moment.duration(1, $scope.duration).humanize();
 
   $scope.increaseDuration = function () {
@@ -99,7 +99,7 @@ app.controller('transactionsController', function($scope, $rootScope, $modal, tr
     }
     newScope.modal = {
       title: newScope.edit ? 'Edit transaction' : 'New transaction'
-    }
+    };
 
     $modal.open({
       templateUrl: 'partials/transaction_add.html',
@@ -113,7 +113,7 @@ app.controller('addTransactionController', function($scope, transactionsService,
   if (!$scope.transaction) {
     $scope.transaction = {
       date: new Date()
-    }
+    };
   } else {
     // reformat string
     $scope.transaction.date = new Date($scope.transaction.date);
@@ -175,14 +175,14 @@ app.controller('cleaningTasksController', function($scope, $rootScope, $modal, t
       templateUrl: 'partials/new_task.html',
       controller: 'newTaskController'
     });
-  }
+  };
 
   $scope.editTask = function(task) {
     editTask(task, true);
   };
   $scope.newTask = function() {
     editTask(null, false);
-  }
+  };
 });
 
 

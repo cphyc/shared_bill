@@ -63,7 +63,7 @@ app.service('transactionsSimplifierService', function() {
       results[user._id] = {
         amount: 0,
         user: user
-      }
+      };
     }
   }
 
@@ -103,7 +103,7 @@ app.service('transactionsSimplifierService', function() {
             break;
           case 'daily':
             count = Math.round(duration.asDays() + 1);
-            break
+            break;
           default:
             count = 1;
         }
@@ -184,7 +184,7 @@ app.service('transactionsSimplifierService', function() {
 
       return simplified;
     }
-  }
+  };
 });
 
 app.service('transactionsService', function($rootScope, $http, transactionsSimplifierService) {
@@ -212,7 +212,7 @@ app.service('transactionsService', function($rootScope, $http, transactionsSimpl
         alert('An error occured', response);
         console.log(response);
         (errorCallback || function() {})();
-      })
+      });
     },
     delete: function(transaction) {
       $http.delete('/api/transactions', {
