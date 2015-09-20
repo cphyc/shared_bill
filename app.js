@@ -5,6 +5,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var jadeStatic = require('jade-static');
+var jcc = require('jade-cache');
 
 var routes = require('./routes/index');
 var api = require('./routes/api');
@@ -29,7 +30,7 @@ app.use(cookieParser());
 app.use(require('less-middleware')(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'bower_components')));
-app.use(jadeStatic(path.join(__dirname, 'views')));
+app.use(jcc.handle);
 
 app.use('/', routes);
 app.use('/api', api);
@@ -44,6 +45,7 @@ app.use(function(req, res, next) {
 
 // error handlers
 
+var options = {};
 // development error handler
 // will print stacktrace
 if (app.get('env') === 'development' || config.development) {
@@ -55,7 +57,14 @@ if (app.get('env') === 'development' || config.development) {
       error: err
     });
   });
+
+  options = { debug: true };
 }
+
+jcc.init(options, app, function() {
+  // all is compiled
+  app.enable('jcc'); // mandatory for middleware to be activated
+});
 
 // production error handler
 // no stacktraces leaked to user
