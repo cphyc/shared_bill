@@ -195,5 +195,5 @@ app.controller('newTaskController', function($scope, tasksService) {
 app.controller('taskDoneController', function($scope, usersService, taskDoneService, $rootScope) {
   $scope.people = usersService.users;
 
-  $scope.submit = taskDoneService.new;
+  $scope.submit = taskDoneService.add;
 });

@@ -45,7 +45,8 @@ app.service('taskDoneService', function($rootScope, $http, usersService, $q) {
         task: task,
         by: by
       }).then(function(response) {
-        $rootScope.$broadcast('updateCleaningTasks');
+        $rootScope.$broadcast('tasksDone:update');
+        $rootScope.$broadcast('tasks:update');
         (successCallback || function() {})();
       }, function(error) {
         console.log(error);
@@ -101,8 +102,7 @@ app.service('taskDoneService', function($rootScope, $http, usersService, $q) {
     }
   };
 
-  $rootScope.$on('tasks:updated', tmp.update);
-  $rootScope.$on('taskDone:update', tmp.update);
+  $rootScope.$on('tasksDone:update', tmp.update);
 
   return tmp;
 });
