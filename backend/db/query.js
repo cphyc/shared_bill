@@ -142,8 +142,6 @@ module.exports = {
             var doNextTime = moment().toDate();
           }
 
-          console.log(doNextTime);
-
           taskAsObject = {
             name: task.name,
             frequency: task.frequency,
@@ -213,7 +211,6 @@ module.exports = {
     }
   },
   markTaskAsDone: function(req) {
-    console.log(req);
     var defered = Q.defer();
     var taskId = req.task._id;
     var userId = req.by._id;
