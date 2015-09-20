@@ -38,7 +38,7 @@ app.service('tasksService', function($http, $rootScope, FREQUENCY_REGEXP) {
   return tmp;
 });
 
-app.service('taskDoneService', function($rootScope, $http, usersService) {
+app.service('taskDoneService', function($rootScope, $http, usersService, $q) {
   var tmp = {
     add: function(task, by, successCallback, errorCallback) {
       $http.post('/api/task_done', {
@@ -56,10 +56,10 @@ app.service('taskDoneService', function($rootScope, $http, usersService) {
     tasksDone: [],
     peopleSummary: [],
     update: function() {
-      var scope = $rootScope.$new();
-
       $http.get('/api/task_done').then(function(taskAnswer) {
-        scope.$on('users:updated', function() {
+        var deferred = $q.defer();
+
+        var unregisterNow = $rootScope.$on('users:updated', function() {
           var users = usersService.users;
           tmp.tasksDone = taskAnswer.data;
 
@@ -84,14 +84,23 @@ app.service('taskDoneService', function($rootScope, $http, usersService) {
 
           tmp.peopleSummary = peopleAsArray;
           $rootScope.$broadcast('taskDone:updated');
+
+          deferred.resolve();
         });
 
         usersService.update();
+        
+        deferred.promise.then(function() {
+          unregisterNow();
+        });
+
       });
+
     }
   };
 
   $rootScope.$on('taskDone:update', tmp.update);
+  $rootScope.$on('tasks:updated', tmp.update);
 
   return tmp;
 });
