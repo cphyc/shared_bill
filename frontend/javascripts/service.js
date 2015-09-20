@@ -58,8 +58,8 @@ app.service('taskDoneService', function($rootScope, $http, usersService, $q) {
     update: function() {
       $http.get('/api/task_done').then(function(taskAnswer) {
         var deferred = $q.defer();
-
-        var unregisterNow = $rootScope.$on('users:updated', function() {
+        var unregisterNow = function() {};
+        var callNow = function() {
           var users = usersService.users;
           tmp.tasksDone = taskAnswer.data;
 
@@ -86,21 +86,23 @@ app.service('taskDoneService', function($rootScope, $http, usersService, $q) {
           $rootScope.$broadcast('taskDone:updated');
 
           deferred.resolve();
-        });
+        };
 
-        usersService.update();
-
-        deferred.promise.then(function() {
-          unregisterNow();
-        });
-
+        if (usersService.users.length > 0) {
+          callNow();
+        } else {
+          unregisterNow = $rootScope.$on('users:updated', callNow);
+          usersService.update();
+          deferred.promise.then(function() {
+            unregisterNow();
+          });
+        }
       });
-
     }
   };
 
-  $rootScope.$on('taskDone:update', tmp.update);
   $rootScope.$on('tasks:updated', tmp.update);
+  $rootScope.$on('taskDone:update', tmp.update);
 
   return tmp;
 });
