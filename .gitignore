@@ -30,3 +30,4 @@ node_modules
 npm-debug.log
 bower_components
 *.annotated.js
+backend/config.js
