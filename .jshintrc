@@ -1,0 +1,9 @@
+{
+  "unused": true,
+  "browser": true,
+  "globalstrict": true,
+  "globals": {
+    "$": true,
+    "moment": true
+  }
+}
