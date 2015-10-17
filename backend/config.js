@@ -3,6 +3,6 @@ module.exports = {
     host: 'localhost',
     collection: 'test'
   },
-  development: true,
+  development: false,
   port: 3000
 };
