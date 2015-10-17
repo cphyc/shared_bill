@@ -44,6 +44,8 @@ div
         td {{ task.frequency | fraction }}
         td {{ task.points }}
         td
+          a(href='' ng-click='markTaskAsDone(task)')
+            i.fa.fa-check
           a(href='' ng-click='editTask(task)')
             i.fa.fa-edit
   div.col-xs-12(ng-if='tasks.nope.length > 0')        
