@@ -13,7 +13,7 @@ var app = angular.module('transactions', ['ngRoute', 'ui.bootstrap', 'isteven-mu
       amMoment.changeLocale('fr');
   });
 
-  app.constant('FREQUENCY_REGEXP', /^(\d+)$|^(1\/(\d+))$/); // matchs integers or fractions in the form 1/x')
+  app.constant('FREQUENCY_REGEXP', /^(\d+)$|^(1\/(\d+))$|^(\d+\.\d+)$/); // matchs integers or fractions in the form 1/x')
 
   app.config(function($routeProvider) {
     $routeProvider
